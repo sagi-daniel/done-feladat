@@ -46,12 +46,13 @@ class StudentsTableSeeder extends Seeder
             ]);
         }
 
+
         $this->updateStudentsCount();
     }
 
     private function updateStudentsCount()
     {
-        // Minden osztály rekord frissítése a diákok számlálásával
+
         $classes = DB::table('classes')->get();
 
         foreach ($classes as $class) {

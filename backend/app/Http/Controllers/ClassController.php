@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ClassController extends Controller
 {
@@ -21,7 +22,7 @@ class ClassController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'class_name' => [
                 'required',
                 'string',
@@ -50,14 +51,12 @@ class ClassController extends Controller
             'teacher_email.required' => 'Az osztályfőnök email címének megadása kötelező.',
         ]);
 
-        $class = new ClassModel();
-        $class->class_name = $request->class_name;
-        $class->classroom = $request->classroom;
-        $class->teacher = $request->teacher;
-        $class->teacher_email = $request->teacher_email;
-        $class->save();
-
-        return response()->json($class, 201);
+        try {
+            $class = ClassModel::create($validatedData);
+            return response()->json($class, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while creating the class.'], 500);
+        }
     }
 
     /**
@@ -65,8 +64,12 @@ class ClassController extends Controller
      */
     public function show(string $id)
     {
-        $class = ClassModel::findOrFail($id);
-        return response()->json($class);
+        try {
+            $class = ClassModel::findOrFail($id);
+            return response()->json($class);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Class not found.'], 404);
+        }
     }
 
     /**
@@ -74,7 +77,7 @@ class ClassController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'class_name' => [
                 'required',
                 'string',
@@ -103,14 +106,15 @@ class ClassController extends Controller
             'teacher_email.required' => 'Az osztályfőnök email címének megadása kötelező.',
         ]);
 
-        $class = ClassModel::findOrFail($id);
-        $class->class_name = $request->class_name;
-        $class->classroom = $request->classroom;
-        $class->teacher = $request->teacher;
-        $class->teacher_email = $request->teacher_email;
-        $class->save();
-
-        return response()->json($class);
+        try {
+            $class = ClassModel::findOrFail($id);
+            $class->update($validatedData);
+            return response()->json($class);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Class not found.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while updating the class.'], 500);
+        }
     }
 
     /**
@@ -118,9 +122,14 @@ class ClassController extends Controller
      */
     public function destroy(string $id)
     {
-        $class = ClassModel::findOrFail($id);
-        $class->delete();
-
-        return response()->json(null, 204);
+        try {
+            $class = ClassModel::findOrFail($id);
+            $class->delete();
+            return response()->json(null, 204);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Class not found.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while deleting the class.'], 500);
+        }
     }
 }

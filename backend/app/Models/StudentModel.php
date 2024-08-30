@@ -9,6 +9,8 @@ class StudentModel extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'students';
+
     protected $fillable = [
         'student_name',
         'class_id',

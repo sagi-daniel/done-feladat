@@ -3,13 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GradeModel extends Model
 {
-
-    use SoftDeletes;
-
     protected $table = 'grades';
 
     protected $fillable = [
@@ -19,21 +15,26 @@ class GradeModel extends Model
         'date',
     ];
 
-    public function student()
-    {
-        return $this->belongsTo(StudentModel::class, 'student_id');
-    }
-
-    protected static function boot()
+    public static function boot()
     {
         parent::boot();
 
-        static::saved(function ($grade) {
+        // Esemény figyelése létrehozáskor, frissítéskor és törléskor
+        static::created(function ($grade) {
+            $grade->student->updateGradesAverage();
+        });
+
+        static::updated(function ($grade) {
             $grade->student->updateGradesAverage();
         });
 
         static::deleted(function ($grade) {
             $grade->student->updateGradesAverage();
         });
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(StudentModel::class, 'student_id');
     }
 }

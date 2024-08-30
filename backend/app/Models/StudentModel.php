@@ -28,13 +28,43 @@ class StudentModel extends Model
         return $this->hasMany(GradeModel::class, 'student_id');
     }
 
-
     public function updateGradesAverage()
     {
-        // Számolja ki az átlagot, ha nincs jegy, állítsa null-ra
         $average = $this->grades()->avg('grade') ?? 0;
-
-        // Frissítse az adatbázis rekordot
         $this->update(['grades_avg' => $average]);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($student) {
+            $student->class->updateStudentsCount();
+        });
+
+        static::deleted(function ($student) {
+            $student->class->updateStudentsCount();
+        });
+
+        static::updated(function ($student) {
+            if ($student->isDirty('class_id')) {
+                $oldClassId = $student->getOriginal('class_id');
+                $newClassId = $student->class_id;
+
+                if ($oldClassId) {
+                    $oldClass = ClassModel::find($oldClassId);
+                    if ($oldClass) {
+                        $oldClass->updateStudentsCount();
+                    }
+                }
+
+                if ($newClassId) {
+                    $newClass = ClassModel::find($newClassId);
+                    if ($newClass) {
+                        $newClass->updateStudentsCount();
+                    }
+                }
+            }
+        });
     }
 }

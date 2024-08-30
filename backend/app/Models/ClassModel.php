@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClassModel extends Model
 {
-
     use SoftDeletes;
 
     protected $table = 'classes';
@@ -17,12 +16,13 @@ class ClassModel extends Model
         'classroom',
         'teacher',
         'teacher_email',
-        'students_count'
+        'students_count',
     ];
 
-    public function calculateStudentsCount()
+    public function updateStudentsCount()
     {
-        // Diákok számának lekérdezése
-        return StudentModel::where('class_id', $this->id)->count();
+        // Frissíti a diákok számát az adott osztályban
+        $studentCount = StudentModel::where('class_id', $this->id)->count();
+        $this->update(['students_count' => $studentCount]);
     }
 }

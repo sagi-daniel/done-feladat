@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassModel;
 use App\Models\StudentModel;
 
 use Illuminate\Support\Facades\Log;
@@ -50,6 +51,9 @@ class StudentController extends Controller
 
             // Számítsd ki és frissítsd az átlagot
             $student->updateGradesAverage();
+
+            // Frissítsd az osztály diákjainak számát
+            $student->class->updateStudentsCount();
 
             return response()->json([
                 'status' => 'success',
@@ -108,10 +112,26 @@ class StudentController extends Controller
             $validatedData = $request->validate($rules, $messages);
 
             $student = StudentModel::findOrFail($id);
-            $student->update($validatedData);
+            $originalClassId = $student->class_id;
 
-            // Számítsd ki és frissítsd az átlagot
+            $student->update($validatedData);
             $student->updateGradesAverage();
+
+            if ($student->class_id !== $originalClassId) {
+                if ($originalClassId) {
+                    $oldClass = ClassModel::find($originalClassId);
+                    if ($oldClass) {
+                        $oldClass->updateStudentsCount();
+                    }
+                }
+
+                if ($student->class_id) {
+                    $newClass = ClassModel::find($student->class_id);
+                    if ($newClass) {
+                        $newClass->updateStudentsCount();
+                    }
+                }
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -142,7 +162,16 @@ class StudentController extends Controller
     {
         try {
             $student = StudentModel::findOrFail($id);
+            $classId = $student->class_id;
+
             $student->delete();
+
+            if ($classId) {
+                $class = ClassModel::find($classId);
+                if ($class) {
+                    $class->updateStudentsCount();
+                }
+            }
 
             return response()->json([
                 'status' => 'success',

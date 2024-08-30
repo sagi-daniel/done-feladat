@@ -25,6 +25,7 @@ class GradesTableSeeder extends Seeder
             ];
         }
 
+
         DB::table('grades')->insert($grades);
     }
 }

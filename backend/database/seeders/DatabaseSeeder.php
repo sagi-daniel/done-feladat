@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             ClassesTableSeeder::class,
             StudentsTableSeeder::class,
             GradesTableSeeder::class,
+            UpdateStudentDataSeeder::class,
         ]);
     }
 }

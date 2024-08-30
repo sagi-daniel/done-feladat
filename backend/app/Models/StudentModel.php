@@ -14,7 +14,7 @@ class StudentModel extends Model
     protected $fillable = [
         'student_name',
         'class_id',
-        'student_grades_avg',
+        'grades_avg',
         'student_phone',
     ];
 
@@ -25,21 +25,16 @@ class StudentModel extends Model
 
     public function grades()
     {
-        return $this->hasMany(GradeModel::class);
+        return $this->hasMany(GradeModel::class, 'student_id');
     }
 
-    public static function boot()
-    {
-        parent::boot();
-
-        static::saved(function ($student) {
-            $student->updateGradesAverage();
-        });
-    }
 
     public function updateGradesAverage()
     {
-        $average = $this->grades()->avg('grade');
-        $this->update(['student_grades_avg' => $average]);
+        // Számolja ki az átlagot, ha nincs jegy, állítsa null-ra
+        $average = $this->grades()->avg('grade') ?? 0;
+
+        // Frissítse az adatbázis rekordot
+        $this->update(['grades_avg' => $average]);
     }
 }

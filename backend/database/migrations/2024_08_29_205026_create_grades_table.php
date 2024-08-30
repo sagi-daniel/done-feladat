@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('grade');
             $table->date('date');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
         });

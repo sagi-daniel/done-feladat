@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('class_name')->unique();
             $table->integer('classroom');
             $table->string('teacher');
-            $table->string('teacher_email')->unique();
+            $table->string('teacher_email');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

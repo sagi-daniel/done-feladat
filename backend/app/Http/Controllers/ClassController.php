@@ -12,15 +12,8 @@ class ClassController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('classes.create');
+        $classes = ClassModel::all();
+        return response()->json($classes);
     }
 
     /**
@@ -47,8 +40,14 @@ class ClassController extends Controller
             'teacher_email' => [
                 'required',
                 'email',
-                'unique:classes,teacher_email'
             ],
+        ], [
+            'class_name.min' => 'Az osztály neve legalább 3 karakter hosszú legyen.',
+            'class_name.required' => 'Az osztály név megadása kötelező.',
+            'class_name.unique' => 'Már létezik osztály ezen a néven. Válassz új osztály nevet!',
+            'classroom.required' => 'Az osztályterem megadása kötelező.',
+            'teacher.required' => 'Az osztályfőnök megadása kötelező.',
+            'teacher_email.required' => 'Az osztályfőnök email címének megadása kötelező.',
         ]);
 
         $class = new ClassModel();
@@ -56,10 +55,9 @@ class ClassController extends Controller
         $class->classroom = $request->classroom;
         $class->teacher = $request->teacher;
         $class->teacher_email = $request->teacher_email;
-        // Az osztály automatikusan frissíti a students_count értéket az updated eseménnyel
         $class->save();
 
-        return redirect()->route('classes.index')->with('success', 'Class created successfully.');
+        return response()->json($class, 201);
     }
 
     /**
@@ -67,15 +65,8 @@ class ClassController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        $class = ClassModel::findOrFail($id);
+        return response()->json($class);
     }
 
     /**
@@ -83,7 +74,43 @@ class ClassController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'class_name' => [
+                'required',
+                'string',
+                'min:3',
+                'max:255',
+                'unique:classes,class_name,' . $id
+            ],
+            'classroom' => [
+                'required',
+                'integer'
+            ],
+            'teacher' => [
+                'required',
+                'string'
+            ],
+            'teacher_email' => [
+                'required',
+                'email',
+            ],
+        ], [
+            'class_name.min' => 'Az osztály neve legalább 3 karakter hosszú legyen.',
+            'class_name.required' => 'Az osztály név megadása kötelező.',
+            'class_name.unique' => 'Már létezik osztály ezen a néven. Válassz új osztály nevet!',
+            'classroom.required' => 'Az osztályterem megadása kötelező.',
+            'teacher.required' => 'Az osztályfőnök megadása kötelező.',
+            'teacher_email.required' => 'Az osztályfőnök email címének megadása kötelező.',
+        ]);
+
+        $class = ClassModel::findOrFail($id);
+        $class->class_name = $request->class_name;
+        $class->classroom = $request->classroom;
+        $class->teacher = $request->teacher;
+        $class->teacher_email = $request->teacher_email;
+        $class->save();
+
+        return response()->json($class);
     }
 
     /**
@@ -91,6 +118,9 @@ class ClassController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $class = ClassModel::findOrFail($id);
+        $class->delete();
+
+        return response()->json(null, 204);
     }
 }

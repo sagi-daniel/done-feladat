@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GradeModel extends Model
 {
 
-    protected $table = 'grades';
+    use SoftDeletes;
 
     protected $fillable = [
         'student_id',
@@ -20,5 +20,18 @@ class GradeModel extends Model
     public function student()
     {
         return $this->belongsTo(StudentModel::class, 'student_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($grade) {
+            $grade->student->updateGradesAverage();
+        });
+
+        static::deleted(function ($grade) {
+            $grade->student->updateGradesAverage();
+        });
     }
 }

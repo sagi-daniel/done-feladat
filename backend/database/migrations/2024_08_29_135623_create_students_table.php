@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('grades_avg');
             $table->string('student_phone');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('class_id')->references('id')->on('classes');
         });

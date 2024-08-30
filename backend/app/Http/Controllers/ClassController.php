@@ -117,6 +117,8 @@ class ClassController extends Controller
             // Find the resource and update it
             $class = ClassModel::findOrFail($id);
             $class->update($validatedData);
+            $class->students_count = $class->calculateStudentsCount();
+            $class->save();
 
             return response()->json([
                 'status' => 'success',

@@ -20,17 +20,7 @@ class ClassModel extends Model
         'students_count'
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::updated(function ($class) {
-            $class->students_count = $class->calculateStudentsCount();
-            $class->save();
-        });
-    }
-
-    private function calculateStudentsCount()
+    public function calculateStudentsCount()
     {
         // Diákok számának lekérdezése
         return StudentModel::where('class_id', $this->id)->count();

@@ -1,0 +1,70 @@
+@layer base {
+  h1 {
+    @apply text-4xl mb-4;
+    line-height: 1.3;
+  }
+  h2 {
+    @apply text-3xl mb-2;
+    line-height: 1.3;
+  }
+  h3 {
+    @apply text-2xl mb-1;
+    line-height: 1.3;
+  }
+  h4 {
+    @apply text-xl;
+    line-height: 1.3;
+  }
+  h5 {
+    @apply text-lg;
+    line-height: 1.3;
+  }
+  h6 {
+    @apply text-base;
+    line-height: 1.3;
+  }
+  p {
+    @apply text-base;
+    line-height: 1.7;
+  }
+  small {
+    @apply text-sm;
+    line-height: 1.7;
+  }
+  th {
+    @apply py-5 px-2  align-middle  text-left text-2xl font-semibold;
+  }
+  td {
+    @apply py-1 px-2  align-middle  md:text-sm  text-left text-xs font-semibold;
+  }
+}
+
+@layer utilities {
+  /* .btn-add {
+    @apply text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2 bg-add text-text-add  disabled:bg-btn-add-disabled;
+  }
+  .btn-delete {
+    @apply bg-delete text-text-delete text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2 border  border-slate-500 disabled:bg-slate-200 disabled:text-slate-400;
+  }
+  .btn-delete-bulk {
+    @apply text-xs md:text-lg md:px-8  bg-slate-100 text-text-delete-bulk border border-text-delete-bulk px-4 py-2 rounded-lg flex justify-center items-center gap-2;
+  }
+  .btn-icon {
+    @apply px-3 py-2 border rounded-lg  text-slate-600;
+  }
+  .btn-cancel {
+    @apply text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2 bg-slate-300 text-slate-600  disabled:bg-slate-200 disabled:text-slate-400;
+  }
+  .btn-disabled {
+    @apply text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2;
+  }
+  .input {
+    @apply bg-slate-100 border p-2 rounded-lg;
+  }
+  .checkbox {
+    @apply w-5 h-5 inline-flex items-center justify-center border-2 bg-bg border-gray-300 rounded-md transition-all duration-200;
+  }
+  .checkbox-active {
+    @apply bg-bg-checkbox border-none;
+  } */
+}

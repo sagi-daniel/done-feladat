@@ -11,15 +11,20 @@ class ClassController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $classes = ClassModel::all();
-        $totalItems = $classes->count();
+
+        $perPage = $request->input('per_page', 10);
+
+        $classes = ClassModel::paginate($perPage);
 
         return response()->json([
             'status' => 'success',
-            'data' => $classes,
-            'totalItems' => $totalItems,
+            'data' => $classes->items(),
+            'totalItems' => $classes->total(),
+            'currentPage' => $classes->currentPage(),
+            'lastPage' => $classes->lastPage(),
+            'perPage' => $classes->perPage(),
         ], 200);
     }
 

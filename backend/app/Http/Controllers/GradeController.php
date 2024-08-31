@@ -14,17 +14,56 @@ class GradeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $grades = GradeModel::all();
-        $totalItems = $grades->count();
+        // Alap lekérdezés a jegyek listájához
+        $query = GradeModel::query();
+
+        if ($request->has('student_name')) {
+            $query->join('students', 'grades.student_id', '=', 'students.id')
+                ->where('students.student_name', 'like', '%' . $request->input('student_name') . '%')
+                ->select('grades.*', 'students.student_name');
+        } else {
+            $query->with('student'); // Eager load the student relation if no student_name filter
+        }
+
+        // Szűrés tantárgy alapján (részleges egyezés)
+        if ($request->has('subject')) {
+            $query->where('subject', 'like', '%' . $request->input('subject') . '%');
+        }
+
+        // Szűrés jegy érték alapján (teljes egyezés)
+        if ($request->has('grade')) {
+            $query->where('grade', $request->input('grade'));
+        }
+
+        // Szűrés dátum alapján (tól-ig értékek)
+        if ($request->has('date_from') && $request->has('date_to')) {
+            $query->whereBetween('date', [
+                $request->input('date_from'),
+                $request->input('date_to')
+            ]);
+        } elseif ($request->has('date_from')) {
+            $query->where('date', '>=', $request->input('date_from'));
+        } elseif ($request->has('date_to')) {
+            $query->where('date', '<=', $request->input('date_to'));
+        }
+
+        $perPage = $request->input('per_page', 10); // Alapértelmezett érték: 10
+
+        // A lekérdezés futtatása lapozással
+        $grades = $query->paginate($perPage);
 
         return response()->json([
             'status' => 'success',
-            'data' => $grades,
-            'totalItems' => $totalItems,
+            'data' => $grades->items(),
+            'totalItems' => $grades->total(),
+            'currentPage' => $grades->currentPage(),
+            'lastPage' => $grades->lastPage(),
+            'perPage' => $grades->perPage(),
         ], 200);
     }
+
 
     /**
      * Show the form for creating a new resource.

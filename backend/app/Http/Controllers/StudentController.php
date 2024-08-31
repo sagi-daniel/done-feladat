@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\ClassModel;
 use App\Models\StudentModel;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
@@ -15,15 +14,46 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = StudentModel::all();
-        $totalItems = $students->count();
+        // Alap lekérdezés a tanulók listájához
+        $query = StudentModel::query();
+
+        // Szűrés név alapján (részleges egyezés)
+        if ($request->has('name')) {
+            $query->where('student_name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        // Szűrés telefonszám alapján (részleges egyezés)
+        if ($request->has('phone')) {
+            $query->where('student_phone', 'like', '%' . $request->input('phone') . '%');
+        }
+
+        // Szűrés osztály alapján (teljes egyezés)
+        if ($request->has('class')) {
+            $query->where('class_id', $request->input('class'));
+        }
+
+        // Szűrés tanulmányi átlag alapján (tól-ig értékek)
+        if ($request->has('grades_avg_from') && $request->has('grades_avg_to')) {
+            $query->whereBetween('grades_avg', [
+                $request->input('grades_avg_from'),
+                $request->input('grades_avg_to')
+            ]);
+        }
+
+        $perPage = $request->input('per_page', 10); // Alapértelmezett érték: 10
+
+        // A helyes objektum használata a lapozáshoz
+        $students = $query->paginate($perPage);
 
         return response()->json([
             'status' => 'success',
-            'data' => $students,
-            'totalItems' => $totalItems,
+            'data' => $students->items(),
+            'totalItems' => $students->total(),
+            'currentPage' => $students->currentPage(),
+            'lastPage' => $students->lastPage(),
+            'perPage' => $students->perPage(),
         ], 200);
     }
 

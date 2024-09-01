@@ -1,87 +1,36 @@
 <script setup>
-import { ref } from 'vue'
-import { getClasses, createClass, getClassById, updateClass, deleteClass } from '../services/apiClasses'
-
+import { ref, onMounted, watch } from 'vue'
+import { useClassesStore } from '../stores/classes'
 import ClassesTable from '../components/features/classes-group/ClassesTable.vue'
 import Pagination from '../components/shared/Pagination.vue'
+import ClassesForm from '../components/features/classes-group/ClassesForm.vue'
+import DeleteAlertModal from '../components/shared/DeleteAlertModal.vue'
 
-// Reaktív változók
-const classes = ref([])
-const error = ref(null)
-const newClass = ref({
-  class_name: '',
-  classroom: '',
-  teacher: '',
-  teacher_email: '',
+const classesStore = useClassesStore()
+
+// Fetch classes on component mount
+onMounted(() => {
+  classesStore.fetchClasses()
 })
 
-// Funkciók
-const fetchClasses = async () => {
-  try {
-    const data = await getClasses()
-    classes.value = data.data
-  } catch (err) {
-    error.value = 'Hiba történt az osztályok lekérésekor'
+// Watch for changes in the current page and refetch classes
+watch(
+  () => classesStore.currentPage,
+  newPage => {
+    classesStore.fetchClasses()
   }
-}
-
-const addClass = async () => {
-  try {
-    await createClass(newClass.value)
-    await fetchClasses() // Frissítjük az osztályok listáját
-    // Tisztítjuk az űrlapot
-    newClass.value = {
-      class_name: '',
-      classroom: '',
-      teacher: '',
-      teacher_email: '',
-    }
-  } catch (err) {
-    error.value = 'Hiba történt az osztály létrehozásakor'
-  }
-}
-
-const fetchClassById = async id => {
-  try {
-    const data = await getClassById(id)
-    console.log(data.data)
-  } catch (err) {
-    error.value = 'Hiba történt az osztály lekérésekor'
-  }
-}
-
-const updateClassById = async (id, updatedClass) => {
-  try {
-    await updateClass(id, updatedClass)
-    await fetchClasses() // Frissítjük az osztályok listáját
-  } catch (err) {
-    error.value = 'Hiba történt az osztály frissítésekor'
-  }
-}
-
-const removeClass = async id => {
-  try {
-    await deleteClass(id)
-    await fetchClasses() // Frissítjük az osztályok listáját
-  } catch (err) {
-    error.value = 'Hiba történt az osztály törlésekor'
-  }
-}
-
-// Form submit kezelése
-const handleAddClass = () => {
-  addClass()
-}
-
-// Inicializálás
-fetchClasses()
+)
 </script>
 
 <template>
-  <div>
-    <ClassesTable />
-    <Pagination />
-    <ClassesFormModal />
+  <section class="size-full md:p-20">
+    <ClassesTable :classes="classesStore.classes" />
+    <Pagination
+      :currentPage="classesStore.currentPage"
+      :totalPages="classesStore.totalPages"
+      @page-change="classesStore.changePage"
+    />
+    <ClassesForm />
     <DeleteAlertModal />
-  </div>
+  </section>
 </template>

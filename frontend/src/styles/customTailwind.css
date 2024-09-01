@@ -31,11 +31,17 @@
     @apply text-sm;
     line-height: 1.7;
   }
+  table {
+    @apply text-center bg-secondary rounded-lg text-primary;
+  }
+  tr {
+    @apply text-center border-b border-primary;
+  }
   th {
-    @apply py-5 px-2  align-middle  text-left text-2xl font-semibold;
+    @apply py-2 px-0 md:py-5 md:px-2 align-middle  text-center text-xs md:text-2xl font-semibold;
   }
   td {
-    @apply py-1 px-2  align-middle  md:text-sm  text-left text-xs font-semibold;
+    @apply py-2 px-0 md:py-4 md:px-6 align-middle  text-center text-xs md:text-sm font-semibold;
   }
 }
 
@@ -46,9 +52,6 @@
   .btn-delete {
     @apply bg-delete text-text-delete text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2 border  border-slate-500 disabled:bg-slate-200 disabled:text-slate-400;
   }
-  .btn-delete-bulk {
-    @apply text-xs md:text-lg md:px-8  bg-slate-100 text-text-delete-bulk border border-text-delete-bulk px-4 py-2 rounded-lg flex justify-center items-center gap-2;
-  }
   .btn-icon {
     @apply px-3 py-2 border rounded-lg  text-slate-600;
   }
@@ -57,14 +60,8 @@
   }
   .btn-disabled {
     @apply text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2;
-  }
-  .input {
-    @apply bg-slate-100 border p-2 rounded-lg;
-  }
-  .checkbox {
-    @apply w-5 h-5 inline-flex items-center justify-center border-2 bg-bg border-gray-300 rounded-md transition-all duration-200;
-  }
-  .checkbox-active {
-    @apply bg-bg-checkbox border-none;
   } */
+  .input {
+    @apply border p-2 rounded-lg;
+  }
 }

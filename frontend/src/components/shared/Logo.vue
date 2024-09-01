@@ -8,7 +8,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { defineProps } from 'vue'
 
 const props = defineProps({

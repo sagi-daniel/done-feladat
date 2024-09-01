@@ -1,3 +1,29 @@
+<script setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import Logo from '../shared/Logo.vue'
+import CloseIcon from '../shared/CloseIcon.vue'
+import Menu from '../shared/Menu.vue'
+import { MENU } from '../../utils/constants'
+
+const isSidebarOpen = ref(false)
+
+const openSidebar = () => {
+  isSidebarOpen.value = true
+}
+
+const closeSidebar = () => {
+  isSidebarOpen.value = false
+}
+
+const route = useRoute()
+const isActive = menuItem => {
+  return route.path === menuItem.path
+}
+</script>
+
 <template>
   <header class="relative">
     <div class="md:hidden flex justify-between items-center p-4">
@@ -27,29 +53,3 @@
     </div>
   </header>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import Logo from '../shared/Logo.vue'
-import CloseIcon from '../shared/CloseIcon.vue'
-import Menu from '../shared/Menu.vue'
-import { MENU } from '../../utils/constants'
-
-const isSidebarOpen = ref(false)
-
-const openSidebar = () => {
-  isSidebarOpen.value = true
-}
-
-const closeSidebar = () => {
-  isSidebarOpen.value = false
-}
-
-const route = useRoute()
-const isActive = menuItem => {
-  return route.path === menuItem.path
-}
-</script>

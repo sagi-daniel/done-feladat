@@ -1,3 +1,16 @@
+<script setup>
+import { useRouter } from 'vue-router'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// Vue Router használata a navigációhoz
+const router = useRouter()
+
+function goToInbox() {
+  router.push('/')
+}
+</script>
+
 <template>
   <div class="flex flex-col items-center justify-center text-content">
     <div class="text-center mt-10">
@@ -12,16 +25,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { useRouter } from 'vue-router'
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-// Vue Router használata a navigációhoz
-const router = useRouter()
-
-function goToInbox() {
-  router.push('/')
-}
-</script>

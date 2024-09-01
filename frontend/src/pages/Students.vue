@@ -1,9 +1,5 @@
+<script setup></script>
+
 <template>
-  <section className="h-full w-5/6 md:w-5/6 md:p-5 flex flex-col"><p>Students</p></section>
+  <p>Students</p>
 </template>
-
-<script>
-export default {}
-</script>
-
-<style></style>

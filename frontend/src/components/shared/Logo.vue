@@ -1,11 +1,3 @@
-<template>
-  <div :class="['flex', alignmentClasses[align], sizeClasses[size], 'h-auto']">
-    <router-link to="/">
-      <img :src="logoSrc" alt="logo" />
-    </router-link>
-  </div>
-</template>
-
 <script setup>
 import { computed } from 'vue'
 import { defineProps } from 'vue'
@@ -36,3 +28,11 @@ const sizeClasses = {
   large: 'w-40',
 }
 </script>
+
+<template>
+  <div :class="['flex', alignmentClasses[align], sizeClasses[size], 'h-auto']">
+    <router-link to="/">
+      <img :src="logoSrc" alt="logo" />
+    </router-link>
+  </div>
+</template>

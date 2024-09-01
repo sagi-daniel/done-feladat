@@ -1,3 +1,17 @@
+<script setup>
+import { defineProps } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+const props = defineProps({
+  menuTitle: {
+    type: String,
+    default: 'Menü',
+  },
+  menuItems: Array,
+  isActive: Function,
+})
+</script>
+
 <template>
   <nav>
     <h2 class="text-xs font-bold mb-2">{{ menuTitle }}</h2>
@@ -15,17 +29,3 @@
     </ul>
   </nav>
 </template>
-
-<script setup>
-import { defineProps } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-const props = defineProps({
-  menuTitle: {
-    type: String,
-    default: 'Menü',
-  },
-  menuItems: Array,
-  isActive: Function,
-})
-</script>

@@ -1,5 +1,5 @@
 <script setup></script>
 
 <template>
-  <p>Classes</p>
+  <p>Class Table</p>
 </template>

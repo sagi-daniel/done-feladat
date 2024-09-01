@@ -26,7 +26,6 @@ const props = defineProps({
   },
 })
 
-// Computed property to get the name or count of selected items
 const itemName = computed(() => {
   if (props.selectedItems.length === 1) {
     const item = props.items.find(item => item.id === props.selectedItems[0])

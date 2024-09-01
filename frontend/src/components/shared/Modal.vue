@@ -15,22 +15,19 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-// Close the modal when the backdrop is clicked
 const handleBackdropClick = () => {
   emit('close')
 }
 
-// Stop click event from propagating to the backdrop
 const handleModalClick = event => {
   event.stopPropagation()
 }
 
-// Watch the isOpen prop to handle opening and closing logic
 watch(
   () => props.isOpen,
   newValue => {
     if (!newValue) {
-      // Handle any additional logic on modal close, if needed
+      // Handle any additional logic
     }
   }
 )

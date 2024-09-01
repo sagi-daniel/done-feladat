@@ -5,9 +5,9 @@
       <li
         v-for="(menuItem, index) in menuItems"
         :key="index"
-        :class="['flex items-center mb-2 cursor-pointer', { 'text-action': isActive(menuItem) }]"
+        :class="['flex items-center mb-2 cursor-pointer', { 'text-action font-semibold': isActive(menuItem) }]"
       >
-        <router-link :to="menuItem.path || ''" class="flex items-center w-full gap-1">
+        <router-link :to="menuItem.path || ''" class="flex items-center w-full gap-1 hover:text-action">
           <font-awesome-icon :icon="menuItem.icon" class="mr-2" />
           {{ menuItem.name }}
         </router-link>

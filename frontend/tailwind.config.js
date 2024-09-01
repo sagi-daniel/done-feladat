@@ -16,19 +16,7 @@ export default {
       secondary: 'var(--light-grey)',
       action: 'var(--action)',
     },
-    extend: {
-      transitionProperty: {
-        width: 'width',
-      },
-      width: {
-        hovered: 'calc(100% - 2px)',
-      },
-    },
-  },
-  variants: {
-    extend: {
-      width: ['hover'],
-    },
+    extend: {},
   },
   plugins: [],
 }

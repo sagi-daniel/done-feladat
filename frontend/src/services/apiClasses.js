@@ -8,66 +8,66 @@ const apiClient = axios.create({
   },
 })
 
-// GET kérés a lista lekéréséhez
-export const getClasses = async (queryParams = {}) => {
+// Lista lekérése
+export const fetchClasses = async (queryParams = {}) => {
   try {
     const response = await apiClient.get('/classes', { params: queryParams })
     return response.data
   } catch (error) {
-    handleError(error)
+    throw handleApiError(error)
   }
 }
 
-// POST kérés az új osztály létrehozásához
+// Új osztály létrehozása
 export const createClass = async classData => {
   try {
     const response = await apiClient.post('/classes', classData)
     return response.data
   } catch (error) {
-    handleError(error)
+    throw handleApiError(error)
   }
 }
 
-// GET kérés az egyes osztályok részleteinek lekéréséhez
-export const getClassById = async id => {
+// Egyes osztály részleteinek lekérése
+export const fetchClassById = async id => {
   try {
     const response = await apiClient.get(`/classes/${id}`)
     return response.data
   } catch (error) {
-    handleError(error)
+    throw handleApiError(error)
   }
 }
 
-// PUT kérés az osztály frissítéséhez
-export const updateClass = async (id, classData) => {
+// Osztály frissítése
+export const updateClassById = async (id, classData) => {
   try {
     const response = await apiClient.put(`/classes/${id}`, classData)
     return response.data
   } catch (error) {
-    handleError(error)
+    throw handleApiError(error)
   }
 }
 
-// DELETE kérés az osztály törléséhez
-export const deleteClass = async id => {
+// Osztály törlése
+export const deleteClassById = async id => {
   try {
     const response = await apiClient.delete(`/classes/${id}`)
     return response.data
   } catch (error) {
-    handleError(error)
+    throw handleApiError(error)
   }
 }
 
-// Hibakezelő funkció
-const handleError = error => {
+// Hibakezelés
+const handleApiError = error => {
+  let errorMessage
   if (error.response) {
-    // A válasz kódja az API-tól
-    console.error('API hiba:', error.response.data)
+    errorMessage = error.response.data
   } else if (error.request) {
-    // Ha nem érkezett válasz az API-tól
-    console.error('API kérés hiba:', error.request)
+    errorMessage = 'No response received from the server.'
   } else {
-    // Kérés előtti hiba
-    console.error('API kérés hiba:', error.message)
+    errorMessage = 'Error occurred while making the request.'
   }
+  console.error('API Error:', errorMessage)
+  return errorMessage
 }

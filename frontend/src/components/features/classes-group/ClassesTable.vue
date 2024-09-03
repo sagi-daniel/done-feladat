@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
   classes: {
@@ -7,6 +7,16 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emits = defineEmits(['open-form-modal', 'open-delete-modal'])
+
+const formHandler = classItem => {
+  emits('open-form-modal', classItem)
+}
+
+const deleteHandler = classItem => {
+  emits('open-delete-modal', classItem)
+}
 </script>
 
 <template>
@@ -18,7 +28,11 @@ const props = defineProps({
         <th class="hidden md:table-cell">Tanár</th>
         <th class="hidden md:table-cell">Email</th>
         <th>Létszám</th>
-        <th>Add Class</th>
+        <th>
+          <button class="btn-icon" @click="formHandler(null)">
+            <font-awesome-icon icon="plus" />
+          </button>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -29,8 +43,12 @@ const props = defineProps({
         <td class="hidden md:table-cell">{{ classItem.teacher_email }}</td>
         <td>{{ classItem.students_count }}</td>
         <td class="flex justify-center items-center space-x-2">
-          <button>edit</button>
-          <button>del</button>
+          <button class="btn-icon" @click="formHandler(classItem)">
+            <font-awesome-icon icon="pencil" />
+          </button>
+          <button class="btn-icon" @click="deleteHandler(classItem)">
+            <font-awesome-icon icon="trash" />
+          </button>
         </td>
       </tr>
     </tbody>

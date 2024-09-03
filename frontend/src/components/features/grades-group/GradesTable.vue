@@ -24,10 +24,11 @@ const deleteHandler = gradeItem => {
   <table class="w-full">
     <thead>
       <tr class="text-center">
-        <th>Dátum</th>
         <th>Tanuló</th>
         <th>Tantárgy</th>
         <th>Érdemjegy</th>
+        <th>Dátum</th>
+        <th>Osztály</th>
         <th>
           <Button className="btn-icon" :onClick="() => formHandler(null)">
             <font-awesome-icon icon="plus" />

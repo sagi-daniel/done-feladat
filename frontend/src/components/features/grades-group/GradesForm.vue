@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
+import { now } from '../../../utils/helpers'
 import Modal from '../../shared/Modal.vue'
 import Button from '../../shared/Button.vue'
 import Input from '../../shared/Input.vue'
@@ -16,30 +17,28 @@ const props = defineProps({
 })
 
 const gradeForm = ref({
-  class_name: '',
-  classroom: 0,
-  teacher: '',
-  teacher_email: '',
+  date: now(),
+  student_id: 0,
+  subject: '',
+  grade: 0,
 })
-
-const errorMessage = ref('') // Add error message state
 
 watch(
   () => props.selectedGrade,
-  newClass => {
-    if (newClass && Object.keys(newClass).length > 0) {
+  newGrade => {
+    if (newGrade && Object.keys(newGrade).length > 0) {
       gradeForm.value = {
-        class_name: newClass.class_name || '',
-        classroom: newClass.classroom || 0,
-        teacher: newClass.teacher || '',
-        teacher_email: newClass.teacher_email || '',
+        date: newGrade.date || now(),
+        student_id: newGrade.student_id || 0,
+        subject: newGrade.subject || '',
+        grade: newGrade.grade || 0,
       }
     } else {
       gradeForm.value = {
-        class_name: '',
-        classroom: 0,
-        teacher: '',
-        teacher_email: '',
+        date: now(),
+        student_id: 0,
+        subject: '',
+        grade: 0,
       }
     }
   },
@@ -48,64 +47,43 @@ watch(
 
 const emits = defineEmits(['handle-save', 'cancel-save'])
 
-const onSave = async () => {
-  try {
-    await emits('handle-save', gradeForm.value)
-    errorMessage.value = '' // Clear error message on successful save
-  } catch (error) {
-    errorMessage.value = error.message || 'An error occurred while saving.' // Capture error message
-  }
+const onSave = () => {
+  emits('handle-save', gradeForm.value)
 }
 
 const onClose = () => {
-  errorMessage.value = '' // Reset error message on close
   emits('cancel-save')
 }
-
-const isFormValid = computed(() => {
-  return (
-    gradeForm.value.class_name.trim() !== '' &&
-    gradeForm.value.classroom > 0 &&
-    gradeForm.value.teacher.trim() !== '' &&
-    gradeForm.value.teacher_email.trim() !== ''
-  )
-})
 </script>
 
 <template>
   <Modal :isOpen="isOpen" @close="onClose">
     <h1>{{ selectedGrade && Object.keys(selectedGrade).length > 0 ? 'Szerkesztés' : 'Létrehozás' }}</h1>
-    <!-- <form @submit.prevent="onSave" class="flex flex-col gap-5 justify-between">
+    <form @submit.prevent="onSave" class="flex flex-col gap-5 justify-between">
+      <Input type="date" label="Dátum" v-model="gradeForm.date" :required="true" placeholder="Adja meg a dátumot..." />
+      <Input
+        type="number"
+        label="Tanuló"
+        v-model="gradeForm.student_id"
+        :required="true"
+        placeholder="Adja meg a tanulót..."
+      />
       <Input
         type="text"
-        label="Osztály név"
-        v-model="gradeForm.class_name"
+        label="Tantárgy"
+        v-model="gradeForm.subject"
         :required="true"
-        placeholder="Adja meg az osztály nevét..."
+        placeholder="Adja meg a tantárgy nevét..."
       />
       <Input
         type="number"
-        label="Osztályterem"
-        v-model="gradeForm.classroom"
+        label="Érdemjegy"
+        v-model="gradeForm.grade"
         :required="true"
-        placeholder="Adja meg az osztályterem számát..."
+        placeholder="Adja meg az érdemjegyet!"
       />
-      <Input
-        type="text"
-        label="Osztályfőnök neve"
-        v-model="gradeForm.teacher"
-        :required="true"
-        placeholder="Adja meg az osztályfőnök nevét..."
-      />
-      <Input
-        type="text"
-        label="Osztályfőnök email címe"
-        v-model="gradeForm.teacher_email"
-        :required="true"
-        placeholder="Adja meg az osztályfőnök email címét..."
-      />
-      <Button type="submit" className="btn-add" :disabled="!isFormValid"> Mentés </Button>
-    </form> -->
+      <Button type="submit" className="btn-add"> Mentés </Button>
+    </form>
 
     <!-- TODO új diák létrehozása megoldás (később)  -->
   </Modal>

@@ -1,12 +1,7 @@
 <script setup>
 import { defineProps } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const props = defineProps({
-  text: {
-    type: String,
-    default: '',
-  },
   className: {
     type: String,
     required: true,
@@ -14,11 +9,6 @@ const props = defineProps({
   type: {
     type: String,
     default: 'button',
-    validator: value => ['submit', 'reset', 'button'].includes(value),
-  },
-  icon: {
-    type: Object,
-    default: undefined,
   },
   disabled: {
     type: Boolean,
@@ -26,14 +16,13 @@ const props = defineProps({
   },
   onClick: {
     type: Function,
-    default: undefined,
+    required: false,
   },
 })
 </script>
 
 <template>
-  <button :class="className" :type="type" :disabled="disabled" @click="props.onClick">
-    <FontAwesomeIcon v-if="props.icon" :icon="props.icon" />
-    {{ text }}
+  <button :class="className" :type="type" :disabled="disabled" @click="onClick">
+    <slot />
   </button>
 </template>

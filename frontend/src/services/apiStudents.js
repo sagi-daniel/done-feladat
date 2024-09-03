@@ -8,45 +8,45 @@ const apiClient = axios.create({
   },
 })
 
-export const fetchClasses = async (queryParams = {}) => {
+export const fetchStudents = async (queryParams = {}) => {
   try {
-    const response = await apiClient.get('/classes', { params: queryParams })
+    const response = await apiClient.get('/students', { params: queryParams })
     return response.data
   } catch (error) {
     throw handleApiError(error)
   }
 }
 
-export const createClass = async classData => {
+export const createStudent = async studentData => {
   try {
-    const response = await apiClient.post('/classes', classData)
+    const response = await apiClient.post('/students', studentData)
     return response.data
   } catch (error) {
     throw handleApiError(error)
   }
 }
 
-export const fetchClassById = async id => {
+export const fetchStudentById = async id => {
   try {
-    const response = await apiClient.get(`/classes/${id}`)
+    const response = await apiClient.get(`/students/${id}`)
     return response.data
   } catch (error) {
     throw handleApiError(error)
   }
 }
 
-export const updateClassById = async (id, classData) => {
+export const updateStudentById = async (id, studentData) => {
   try {
-    const response = await apiClient.put(`/classes/${id}`, classData)
+    const response = await apiClient.put(`/students/${id}`, studentData)
     return response.data
   } catch (error) {
     throw handleApiError(error)
   }
 }
 
-export const deleteClassById = async id => {
+export const deleteStudentById = async id => {
   try {
-    const response = await apiClient.delete(`/classes/${id}`)
+    const response = await apiClient.delete(`/students/${id}`)
     return response.data
   } catch (error) {
     throw handleApiError(error)

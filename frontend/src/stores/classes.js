@@ -59,7 +59,7 @@ export const useClassesStore = defineStore('classes', {
 
       try {
         await createClass(classData)
-        await this.getClasses() // Re-fetch the list of classes
+        await this.getClasses()
       } catch (error) {
         this.error = error
       } finally {
@@ -73,7 +73,7 @@ export const useClassesStore = defineStore('classes', {
 
       try {
         await updateClassById(id, classData)
-        await this.getClasses() // Re-fetch the list of classes
+        await this.getClasses()
       } catch (error) {
         this.error = error
       } finally {
@@ -87,7 +87,7 @@ export const useClassesStore = defineStore('classes', {
 
       try {
         await deleteClassById(id)
-        await this.getClasses() // Re-fetch the list of classes
+        await this.getClasses()
       } catch (error) {
         this.error = error
       } finally {

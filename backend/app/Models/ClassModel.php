@@ -23,6 +23,7 @@ class ClassModel extends Model
     {
         // Frissíti a diákok számát az adott osztályban
         $studentCount = StudentModel::where('class_id', $this->id)->count();
-        $this->update(['students_count' => $studentCount]);
+        $this->students_count = $studentCount;
+        $this->save();
     }
 }

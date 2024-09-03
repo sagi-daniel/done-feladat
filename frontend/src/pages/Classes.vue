@@ -84,6 +84,11 @@ const onPageChange = async page => {
       :selectedClass="selectedClass"
       @handle-delete="onDelete"
       @cancel-delete="toggleDeleteModal"
-    />
+      ><p class="text-lg text-center">
+        Biztosan törölni szeretné: <br />
+        <span class="font-semibold">{{ selectedClass.class_name }}</span
+        >?
+      </p></DeleteAlertModal
+    >
   </section>
 </template>

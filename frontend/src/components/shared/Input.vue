@@ -5,7 +5,7 @@ const props = defineProps({
   type: {
     type: String,
     default: 'text',
-    validator: value => ['text', 'email', 'number', 'password', 'url', 'tel'].includes(value),
+    validator: value => ['text', 'email', 'number', 'password', 'url', 'tel', 'date'].includes(value),
   },
   label: {
     type: String,
@@ -16,7 +16,7 @@ const props = defineProps({
     default: '',
   },
   modelValue: {
-    type: [String, Number],
+    type: [String, Number, Date],
     required: true,
   },
   required: {

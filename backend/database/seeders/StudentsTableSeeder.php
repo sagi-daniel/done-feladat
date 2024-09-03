@@ -24,6 +24,7 @@ class StudentsTableSeeder extends Seeder
                 'student_name' => $faker->name,
                 'class_id' => $classIds[array_rand($classIds)], // Véletlenszerűen osztály azonosító
                 'student_phone' => $faker->phoneNumber,
+                'student_address' => $faker->streetAddress,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];

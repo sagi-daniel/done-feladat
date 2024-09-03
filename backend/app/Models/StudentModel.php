@@ -17,6 +17,7 @@ class StudentModel extends Model
         'class_id',
         'grades_avg',
         'student_phone',
+        'student_address',
     ];
 
     protected $hidden = ['class_id']; // populated

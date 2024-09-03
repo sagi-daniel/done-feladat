@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('student_name');
             $table->unsignedBigInteger('class_id');
             $table->string('student_phone');
+            $table->string('student_address');
             $table->decimal('grades_avg', 5, 2)->nullable()->default(null);
             $table->timestamps();
             $table->softDeletes();

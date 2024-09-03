@@ -27,9 +27,8 @@ const deleteHandler = studentItem => {
       <tr class="text-center">
         <th>Tanuló</th>
         <th>Osztály</th>
-        <th class="hidden md:table-cell">Telefon</th>
-        <th class="hidden md:table-cell">Cím</th>
         <th>Tanulmányi átlag</th>
+        <th class="hidden md:table-cell">Telefon</th>
         <th>
           <Button className="btn-icon" :onClick="() => formHandler(null)">
             <font-awesome-icon icon="plus" />
@@ -41,9 +40,8 @@ const deleteHandler = studentItem => {
       <tr v-for="studentItem in students" :key="studentItem.id" class="text-center hover:bg-gray-100">
         <td>{{ studentItem.student_name }}</td>
         <td>{{ studentItem.class.class_name }}</td>
-        <td class="hidden md:table-cell">{{ studentItem.student_phone }}</td>
-        <td class="hidden md:table-cell">{{ studentItem.student_address }}</td>
         <td>{{ studentItem.grades_avg }}</td>
+        <td class="hidden md:table-cell">{{ studentItem.student_phone }}</td>
         <td class="flex justify-center items-center space-x-2">
           <Button className="btn-icon" :onClick="() => formHandler(studentItem)">
             <font-awesome-icon icon="pencil" />

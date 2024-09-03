@@ -32,7 +32,7 @@ const changePage = debounce(newPage => {
       v-for="page in totalPages"
       :key="page"
       @click="changePage(page)"
-      :class="['cursor-pointer', currentPage === page ? 'text-action' : '']"
+      :class="['hidden md:inline cursor-pointer', currentPage === page ? 'text-action' : '']"
     >
       {{ page }}
     </span>

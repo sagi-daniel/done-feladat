@@ -106,9 +106,7 @@ const isFormValid = computed(() => {
       />
       <Button type="submit" className="btn-add" :disabled="!isFormValid"> Mentés </Button>
     </form>
-    <div v-if="errorMessage" class="text-red-500 mt-4">
-      {{ errorMessage }}
-    </div>
+
     <!-- TODO új diák létrehozása megoldás (később)  -->
   </Modal>
 </template>

@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue'
 import Modal from './Modal.vue'
 import Button from './Button.vue'
 
@@ -8,55 +7,33 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  onClose: {
-    type: Function,
-    required: true,
-  },
-  selectedItems: {
-    type: Array,
-    required: true,
-  },
-  items: {
-    type: Array,
-    required: true,
-  },
-  handleDelete: {
-    type: Function,
-    required: true,
+  selectedItem: {
+    type: Object,
+    default: {},
   },
 })
 
-const itemName = computed(() => {
-  if (props.selectedItems.length === 1) {
-    const item = props.items.find(item => item.id === props.selectedItems[0])
-    return item ? item.name : 'Item'
-  }
-  return `${props.selectedItems.length} selected items`
-})
+const emits = defineEmits(['handle-delete', 'cancel-delete'])
+
+const onDelete = classItem => {
+  emits('handle-delete', classItem)
+}
+
+const onClose = () => {
+  emits('cancel-delete')
+}
 </script>
 
 <template>
-  <Modal :isOpen="props.isOpen" :onClose="props.onClose">
+  <Modal :isOpen="isOpen" @close="onClose">
     <p class="text-lg text-center">
-      Do you want to delete <br />
-      <span class="font-semibold">{{ itemName }}</span>
-      from the list?
+      Biztosan törölni szeretné: <br />
+      <span class="font-semibold">{{ selectedItem ? selectedItem.class_name : '' }}</span
+      >?
     </p>
     <div class="flex gap-2 justify-center items-center mt-5">
-      <Button text="Delete" @click="props.handleDelete" class="btn-delete" />
-      <Button text="Cancel" @click="props.onClose" class="btn-cancel" />
+      <Button :onClick="onDelete" className="btn-delete">Törlés</Button>
+      <Button :onClick="onClose" className="btn-cancel">Mégse</Button>
     </div>
   </Modal>
 </template>
-
-<style scoped>
-.btn-delete {
-  background-color: #e53e3e;
-  color: white;
-}
-
-.btn-cancel {
-  background-color: #edf2f7;
-  color: #2d3748;
-}
-</style>

@@ -3,16 +3,21 @@ import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
   type: {
-    type: 'text' | 'email' | 'number' | 'password' | 'url' | 'email' | 'tel',
+    type: String,
     default: 'text',
+    validator: value => ['text', 'email', 'number', 'password', 'url', 'tel'].includes(value),
+  },
+  label: {
+    type: String,
+    required: true,
   },
   placeholder: {
     type: String,
     default: '',
   },
   modelValue: {
-    type: String,
-    default: '',
+    type: [String, Number],
+    required: true,
   },
   required: {
     type: Boolean,
@@ -32,7 +37,8 @@ const emit = defineEmits(['update:modelValue'])
 </script>
 
 <template>
-  <div class="mb3">
+  <div class="mb-1">
+    <label>{{ label }}</label>
     <input
       :type="type"
       :placeholder="placeholder"
@@ -40,7 +46,7 @@ const emit = defineEmits(['update:modelValue'])
       :required="required"
       :disabled="disabled"
       @input="$emit('update:modelValue', $event.target.value)"
-      :className="className"
+      :class="className"
     />
   </div>
 </template>

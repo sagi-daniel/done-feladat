@@ -5,3 +5,5 @@ export const debounce = (fn, delay) => {
     timeout = setTimeout(() => fn.apply(this, args), delay)
   }
 }
+
+export const now = () => new Date().toISOString().split('T')[0]

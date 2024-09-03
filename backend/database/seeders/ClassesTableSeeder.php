@@ -20,7 +20,7 @@ class ClassesTableSeeder extends Seeder
         for ($i = 0; $i < $numClasses; $i++) {
             $classes[] = [
                 'class_name' => $faker->word . ' ' . $faker->numberBetween(100, 999),
-                'classroom' => $faker->numberBetween(100, 3000),
+                'classroom' => $faker->numberBetween(100, 1000),
                 'teacher' => $faker->name,
                 'teacher_email' => $faker->unique()->safeEmail,
                 'created_at' => Carbon::now(),

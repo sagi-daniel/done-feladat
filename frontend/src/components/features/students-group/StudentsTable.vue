@@ -28,7 +28,7 @@ const deleteHandler = studentItem => {
         <th>Tanuló</th>
         <th>Osztály</th>
         <th class="hidden md:table-cell">Telefon</th>
-        <!-- <th class="hidden md:table-cell">Cím</th> -->
+        <th class="hidden md:table-cell">Cím</th>
         <th>Tanulmányi átlag</th>
         <th>
           <Button className="btn-icon" :onClick="() => formHandler(null)">
@@ -42,7 +42,7 @@ const deleteHandler = studentItem => {
         <td>{{ studentItem.student_name }}</td>
         <td>{{ studentItem.class.class_name }}</td>
         <td class="hidden md:table-cell">{{ studentItem.student_phone }}</td>
-        <!-- <td class="hidden md:table-cell">{{ studentItem.address }}</td> -->
+        <td class="hidden md:table-cell">{{ studentItem.student_address }}</td>
         <td>{{ studentItem.grades_avg }}</td>
         <td class="flex justify-center items-center space-x-2">
           <Button className="btn-icon" :onClick="() => formHandler(studentItem)">

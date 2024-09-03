@@ -26,11 +26,7 @@ const onClose = () => {
 
 <template>
   <Modal :isOpen="isOpen" @close="onClose">
-    <p class="text-lg text-center">
-      Biztosan törölni szeretné: <br />
-      <span class="font-semibold">{{ selectedItem ? selectedItem.class_name : '' }}</span
-      >?
-    </p>
+    <slot></slot>
     <div class="flex gap-2 justify-center items-center mt-5">
       <Button :onClick="onDelete" className="btn-delete">Törlés</Button>
       <Button :onClick="onClose" className="btn-cancel">Mégse</Button>

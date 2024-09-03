@@ -11,7 +11,8 @@ class ClassesTableSeeder extends Seeder
 {
     public function run()
     {
-        $faker = Faker::create();
+        $faker = Faker::create('hu_HU');
+
 
         $classes = [];
         $numClasses = 30;

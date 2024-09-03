@@ -11,7 +11,7 @@ class GradesTableSeeder extends Seeder
 {
     public function run()
     {
-        $faker = Faker::create();
+        $faker = Faker::create('hu_HU');
 
         // Minden diákhoz 5 érdemjegyet rendelünk
         $numGradesPerStudent = 2;

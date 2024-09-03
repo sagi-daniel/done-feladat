@@ -11,7 +11,7 @@ class StudentsTableSeeder extends Seeder
 {
     public function run()
     {
-        $faker = Faker::create();
+        $faker = Faker::create('hu_HU');
 
         // Az osztályok azonosítói
         $classIds = range(1, 25);

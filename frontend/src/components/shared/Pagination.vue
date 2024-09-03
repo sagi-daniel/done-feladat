@@ -53,6 +53,10 @@ const visiblePages = computed(() => {
       <font-awesome-icon icon="chevron-left" />
     </button>
 
+    <span v-if="props.currentPage > 3">
+      <span @click="changePage(1)" class="cursor-pointer font-semibold"> {{ 1 }} </span>...
+    </span>
+
     <span
       v-for="page in visiblePages"
       :key="page"
@@ -63,7 +67,7 @@ const visiblePages = computed(() => {
     </span>
 
     <span v-if="props.totalPages - visiblePages[visiblePages.length - 1] > 1">
-      <span @click="changePage(props.totalPages)" class="cursor-pointer"> {{ props.totalPages }} </span>
+      <span @click="changePage(props.totalPages)" class="cursor-pointer font-semibold"> {{ props.totalPages }} </span>
     </span>
 
     <button

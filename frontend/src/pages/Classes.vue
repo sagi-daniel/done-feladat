@@ -5,32 +5,85 @@ import ClassesTable from '../components/features/classes-group/ClassesTable.vue'
 import Pagination from '../components/shared/Pagination.vue'
 import ClassesForm from '../components/features/classes-group/ClassesForm.vue'
 import DeleteAlertModal from '../components/shared/DeleteAlertModal.vue'
+import LoadingSpinner from '../components/shared/LoadingSpinner.vue'
 
 const classesStore = useClassesStore()
 
-// Fetch classes on component mount
+const isFormModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
+const selectedClass = ref(null)
+
 onMounted(() => {
-  classesStore.fetchClasses()
+  classesStore.getClasses()
 })
 
-// Watch for changes in the current page and refetch classes
 watch(
   () => classesStore.currentPage,
-  newPage => {
-    classesStore.fetchClasses()
+  () => {
+    classesStore.getClasses()
   }
 )
+
+const toggleDeleteModal = classItem => {
+  selectedClass.value = classItem
+  isDeleteModalOpen.value = !isDeleteModalOpen.value
+}
+
+const toggleFormModal = classItem => {
+  selectedClass.value = classItem
+  isFormModalOpen.value = !isFormModalOpen.value
+}
+
+const onDelete = async () => {
+  if (selectedClass.value) {
+    await classesStore.removeClass(selectedClass.value.id)
+    isDeleteModalOpen.value = false
+  }
+}
+
+const onSave = async classItem => {
+  if (selectedClass.value) {
+    await classesStore.editClass(selectedClass.value.id, classItem)
+    isFormModalOpen.value = false
+  } else {
+    await classesStore.addClass(classItem)
+    isFormModalOpen.value = false
+  }
+}
+
+const onPageChange = async page => {
+  await classesStore.changePage(page)
+}
 </script>
 
 <template>
-  <section class="size-full md:p-20">
-    <ClassesTable :classes="classesStore.classes" />
-    <Pagination
-      :currentPage="classesStore.currentPage"
-      :totalPages="classesStore.totalPages"
-      @page-change="classesStore.changePage"
+  <section class="size-full flex flex-col justify-between md:p-20">
+    <div v-if="classesStore.isLoading">
+      <LoadingSpinner />
+    </div>
+    <div v-else>
+      <ClassesTable
+        :classes="classesStore.classes"
+        @open-form-modal="toggleFormModal"
+        @open-delete-modal="toggleDeleteModal"
+      />
+      <Pagination
+        :currentPage="classesStore.currentPage"
+        :totalPages="classesStore.totalPages"
+        @page-change="onPageChange"
+      />
+    </div>
+    <ClassesForm
+      :isOpen="isFormModalOpen"
+      :selectedClass="selectedClass"
+      @handle-save="onSave"
+      @cancel-save="toggleFormModal"
     />
-    <ClassesForm />
-    <DeleteAlertModal />
+    <DeleteAlertModal
+      :isOpen="isDeleteModalOpen"
+      :selectedClass="selectedClass"
+      @handle-delete="onDelete"
+      @cancel-delete="toggleDeleteModal"
+    />
   </section>
 </template>

@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
+import Button from '../../shared/Button.vue'
 
 const props = defineProps({
   classes: {
@@ -29,9 +30,9 @@ const deleteHandler = classItem => {
         <th class="hidden md:table-cell">Email</th>
         <th>Létszám</th>
         <th>
-          <button class="btn-icon" @click="formHandler(null)">
+          <Button className="btn-icon" :onClick="() => formHandler(null)">
             <font-awesome-icon icon="plus" />
-          </button>
+          </Button>
         </th>
       </tr>
     </thead>
@@ -43,12 +44,12 @@ const deleteHandler = classItem => {
         <td class="hidden md:table-cell">{{ classItem.teacher_email }}</td>
         <td>{{ classItem.students_count }}</td>
         <td class="flex justify-center items-center space-x-2">
-          <button class="btn-icon" @click="formHandler(classItem)">
+          <Button className="btn-icon" :onClick="() => formHandler(classItem)">
             <font-awesome-icon icon="pencil" />
-          </button>
-          <button class="btn-icon" @click="deleteHandler(classItem)">
+          </Button>
+          <Button className="btn-icon" :onClick="() => deleteHandler(classItem)">
             <font-awesome-icon icon="trash" />
-          </button>
+          </Button>
         </td>
       </tr>
     </tbody>

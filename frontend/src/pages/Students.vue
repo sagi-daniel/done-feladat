@@ -70,6 +70,7 @@ const onPageChange = async page => {
       <Pagination
         :currentPage="studentsStore.currentPage"
         :totalPages="studentsStore.totalPages"
+        :lastPage="studentsStore.lastPage"
         @page-change="onPageChange"
       />
     </div>

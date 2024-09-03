@@ -22,8 +22,6 @@ const classForm = ref({
   teacher_email: '',
 })
 
-const errorMessage = ref('') // Add error message state
-
 watch(
   () => props.selectedClass,
   newClass => {
@@ -48,17 +46,11 @@ watch(
 
 const emits = defineEmits(['handle-save', 'cancel-save'])
 
-const onSave = async () => {
-  try {
-    await emits('handle-save', classForm.value)
-    errorMessage.value = '' // Clear error message on successful save
-  } catch (error) {
-    errorMessage.value = error.message || 'An error occurred while saving.' // Capture error message
-  }
+const onSave = () => {
+  emits('handle-save', classForm.value)
 }
 
 const onClose = () => {
-  errorMessage.value = '' // Reset error message on close
   emits('cancel-save')
 }
 

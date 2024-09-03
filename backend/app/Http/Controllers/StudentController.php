@@ -16,25 +16,21 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        // Alap lekérdezés a tanulók listájához
-        $query = StudentModel::query();
 
-        // Szűrés név alapján (részleges egyezés)
+        $query = StudentModel::with('class');
+
         if ($request->has('name')) {
             $query->where('student_name', 'like', '%' . $request->input('name') . '%');
         }
 
-        // Szűrés telefonszám alapján (részleges egyezés)
         if ($request->has('phone')) {
             $query->where('student_phone', 'like', '%' . $request->input('phone') . '%');
         }
 
-        // Szűrés osztály alapján (teljes egyezés)
         if ($request->has('class')) {
             $query->where('class_id', $request->input('class'));
         }
 
-        // Szűrés tanulmányi átlag alapján (tól-ig értékek)
         if ($request->has('grades_avg_from') && $request->has('grades_avg_to')) {
             $query->whereBetween('grades_avg', [
                 $request->input('grades_avg_from'),
@@ -42,9 +38,8 @@ class StudentController extends Controller
             ]);
         }
 
-        $perPage = $request->input('per_page', 10); // Alapértelmezett érték: 10
+        $perPage = $request->input('per_page', 10);
 
-        // A helyes objektum használata a lapozáshoz
         $students = $query->paginate($perPage);
 
         return response()->json([
@@ -108,7 +103,9 @@ class StudentController extends Controller
     public function show(string $id)
     {
         try {
-            $student = StudentModel::findOrFail($id);
+
+            $student = StudentModel::with('class')->findOrFail($id);
+
             return response()->json([
                 'status' => 'success',
                 'data' => $student,

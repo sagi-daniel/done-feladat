@@ -11,12 +11,15 @@ class StudentModel extends Model
 
     protected $table = 'students';
 
+
     protected $fillable = [
         'student_name',
         'class_id',
         'grades_avg',
         'student_phone',
     ];
+
+    protected $hidden = ['class_id']; // populated
 
     public function class()
     {

@@ -19,6 +19,11 @@ class ClassModel extends Model
         'students_count',
     ];
 
+    public function students()
+    {
+        return $this->hasMany(StudentModel::class, 'class_id');
+    }
+
     public function updateStudentsCount()
     {
         // Frissíti a diákok számát az adott osztályban

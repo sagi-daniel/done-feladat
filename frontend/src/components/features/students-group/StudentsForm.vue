@@ -17,12 +17,10 @@ const props = defineProps({
 
 const studentForm = ref({
   student_name: '',
-  class_id: 0,
+  class: 0,
   student_phone: '',
   student_address: '',
 })
-
-const errorMessage = ref('') // Add error message state
 
 watch(
   () => props.selectedStudent,
@@ -30,7 +28,7 @@ watch(
     if (newClass && Object.keys(newClass).length > 0) {
       studentForm.value = {
         student_name: newClass.student_name || '',
-        class_id: newClass.class_id || 0,
+        class_id: newClass.class.id || 0,
         student_phone: newClass.student_phone || '',
         student_address: newClass.student_address || '',
       }
@@ -48,24 +46,18 @@ watch(
 
 const emits = defineEmits(['handle-save', 'cancel-save'])
 
-const onSave = async () => {
-  try {
-    await emits('handle-save', studentForm.value)
-    errorMessage.value = '' // Clear error message on successful save
-  } catch (error) {
-    errorMessage.value = error.message || 'An error occurred while saving.' // Capture error message
-  }
+const onSave = () => {
+  emits('handle-save', studentForm.value)
 }
 
 const onClose = () => {
-  errorMessage.value = '' // Reset error message on close
   emits('cancel-save')
 }
 
 const isFormValid = computed(() => {
   return (
     studentForm.value.student_name.trim() !== '' &&
-    studentForm.value.class_id > 0 &&
+    studentForm.value.class &&
     studentForm.value.student_phone.trim() !== '' &&
     studentForm.value.student_address.trim() !== ''
   )
@@ -75,36 +67,37 @@ const isFormValid = computed(() => {
 <template>
   <Modal :isOpen="isOpen" @close="onClose">
     <h1>{{ selectedStudent && Object.keys(selectedStudent).length > 0 ? 'Szerkesztés' : 'Létrehozás' }}</h1>
-    <!-- <form @submit.prevent="onSave" class="flex flex-col gap-5 justify-between">
+    <form @submit.prevent="onSave" class="flex flex-col gap-5 justify-between">
       <Input
         type="text"
-        label="Osztály név"
-        v-model="studentForm. student_name"
+        label="Tanuló neve"
+        v-model="studentForm.student_name"
         :required="true"
-        placeholder="Adja meg az osztály nevét..."
+        placeholder="Adja meg a tanuló nevét..."
       />
+      <!-- TODO itt le kell kérni a létező osztályokat -->
       <Input
         type="number"
-        label="Osztályterem"
-        v-model="studentForm.class_id"
+        label="Osztály"
+        v-model="studentForm.class"
         :required="true"
-        placeholder="Adja meg az osztályterem számát..."
+        placeholder="Adja meg az osztályt."
       />
       <Input
         type="text"
-        label="Osztályfőnök neve"
+        label="Telefon"
         v-model="studentForm.student_phone"
         :required="true"
-        placeholder="Adja meg az osztályfőnök nevét..."
+        placeholder="Adja meg a telefonszámát"
       />
       <Input
         type="text"
-        label="Osztályfőnök email címe"
+        label="Lakcím"
         v-model="studentForm.student_address"
         :required="true"
-        placeholder="Adja meg az osztályfőnök email címét..."
+        placeholder="Adja meg a lakcímét..."
       />
       <Button type="submit" className="btn-add" :disabled="!isFormValid"> Mentés </Button>
-    </form> -->
+    </form>
   </Modal>
 </template>

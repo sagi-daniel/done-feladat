@@ -14,9 +14,22 @@ import {
   faLandmark,
   faUserGraduate,
   faBook,
+  faUserPlus,
+  faAddressCard,
 } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faChevronLeft, faChevronRight, faTrash, faPencil, faPlus, faLandmark, faUserGraduate, faBook)
+library.add(
+  faChevronLeft,
+  faChevronRight,
+  faTrash,
+  faPencil,
+  faPlus,
+  faLandmark,
+  faUserGraduate,
+  faBook,
+  faUserPlus,
+  faAddressCard
+)
 
 const pinia = createPinia()
 const app = createApp(App)

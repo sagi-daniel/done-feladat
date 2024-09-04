@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
+use App\Models\StudentModel;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -43,6 +44,7 @@ class ClassController extends Controller
             'classroom' => 'required|integer',
             'teacher' => 'required|string',
             'teacher_email' => 'required|email',
+            'students' => 'nullable|array',
         ];
 
         $messages = [
@@ -55,14 +57,39 @@ class ClassController extends Controller
         ];
 
         try {
-
             $validatedData = $request->validate($rules, $messages);
 
-            $class = ClassModel::create($validatedData);
+            $class = ClassModel::create([
+                'class_name' => $validatedData['class_name'],
+                'classroom' => $validatedData['classroom'],
+                'teacher' => $validatedData['teacher'],
+                'teacher_email' => $validatedData['teacher_email'],
+            ]);
+
+            if (isset($validatedData['students']) && is_array($validatedData['students'])) {
+                foreach ($validatedData['students'] as $studentData) {
+                    try {
+                        StudentModel::create([
+                            'student_name' => $studentData['student_name'],
+                            'class_id' => $class->id,
+                            'student_email' => $studentData['student_email'],
+                            'student_phone' => $studentData['student_phone'] ?? null,
+                            'student_address' => $studentData['student_address'] ?? null,
+                        ]);
+                    } catch (\Exception $e) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'An error occurred while creating a student.',
+                            'student_data' => $studentData,
+                            'error_details' => $e->getMessage(),
+                        ], 500);
+                    }
+                }
+            }
 
             return response()->json([
                 'status' => 'success',
-                'data' => $class,
+                'data' => $class->load('students'),
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -73,14 +100,11 @@ class ClassController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while creating the class.',
+                'error_details' => $e->getMessage(),
             ], 500);
         }
     }
 
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         try {
@@ -102,12 +126,12 @@ class ClassController extends Controller
         }
     }
 
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-
         $rules = [
             'class_name' => 'required|string|min:3|max:255|unique:classes,class_name,' . $id,
             'classroom' => 'integer',
@@ -115,28 +139,45 @@ class ClassController extends Controller
             'teacher_email' => 'email',
         ];
 
-
         $messages = [
             'class_name.min' => 'Az osztály neve legalább 3 karakter hosszú legyen.',
             'class_name.unique' => 'Már létezik osztály ezen a néven. Válassz új osztály nevet!',
         ];
 
         try {
-
             $validatedData = $request->validate($rules, $messages);
-
 
             $class = ClassModel::findOrFail($id);
             $class->update($validatedData);
 
-            $class->updateStudentsCount();
+            if (isset($validatedData['students']) && is_array($validatedData['students'])) {
+                $class->students()->delete();
+
+                foreach ($validatedData['students'] as $studentData) {
+                    try {
+                        StudentModel::create([
+                            'student_name' => $studentData['student_name'],
+                            'class_id' => $class->id,
+                            'student_email' => $studentData['student_email'],
+                            'student_phone' => $studentData['student_phone'] ?? null,
+                            'student_address' => $studentData['student_address'] ?? null,
+                        ]);
+                    } catch (\Exception $e) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'An error occurred while creating a student.',
+                            'student_data' => $studentData,
+                            'error_details' => $e->getMessage(),
+                        ], 500);
+                    }
+                }
+            }
 
             return response()->json([
                 'status' => 'success',
-                'data' => $class,
+                'data' => $class->load('students'),
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
-
             return response()->json([
                 'status' => 'error',
                 'errors' => $e->errors(),
@@ -154,6 +195,7 @@ class ClassController extends Controller
             ], 500);
         }
     }
+
 
 
 

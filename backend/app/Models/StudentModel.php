@@ -14,11 +14,10 @@ class StudentModel extends Model
 
     protected $fillable = [
         'student_name',
-        'class_id',
         'student_phone',
         'student_email',
         'student_address',
-
+        'class_id',
     ];
 
     public function classes()

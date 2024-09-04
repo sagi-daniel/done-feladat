@@ -31,13 +31,6 @@ class StudentController extends Controller
             $query->where('class_id', $request->input('class'));
         }
 
-        // if ($request->has('grades_avg_from') && $request->has('grades_avg_to')) {
-        //     $query->whereBetween('grades_avg', [
-        //         $request->input('grades_avg_from'),
-        //         $request->input('grades_avg_to')
-        //     ]);
-        // }
-
         $perPage = $request->input('per_page', 10);
 
         $students = $query->paginate($perPage);

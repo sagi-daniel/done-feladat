@@ -16,7 +16,6 @@ class GradeController extends Controller
      */
     public function index(Request $request)
     {
-        // Alap lekérdezés a jegyek listájához
         $query = GradeModel::query();
 
         if ($request->has('student_name')) {
@@ -24,20 +23,20 @@ class GradeController extends Controller
                 ->where('students.student_name', 'like', '%' . $request->input('student_name') . '%')
                 ->select('grades.*', 'students.student_name');
         } else {
-            $query->with('student'); // Eager load the student relation if no student_name filter
+            $query->with('student');
         }
 
-        // Szűrés tantárgy alapján (részleges egyezés)
+
         if ($request->has('subject')) {
             $query->where('subject', 'like', '%' . $request->input('subject') . '%');
         }
 
-        // Szűrés jegy érték alapján (teljes egyezés)
+
         if ($request->has('grade')) {
             $query->where('grade', $request->input('grade'));
         }
 
-        // Szűrés dátum alapján (tól-ig értékek)
+
         if ($request->has('date_from') && $request->has('date_to')) {
             $query->whereBetween('date', [
                 $request->input('date_from'),
@@ -49,9 +48,8 @@ class GradeController extends Controller
             $query->where('date', '<=', $request->input('date_to'));
         }
 
-        $perPage = $request->input('per_page', 10); // Alapértelmezett érték: 10
+        $perPage = $request->input('per_page', 10);
 
-        // A lekérdezés futtatása lapozással
         $grades = $query->paginate($perPage);
 
         return response()->json([
@@ -65,13 +63,6 @@ class GradeController extends Controller
     }
 
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        // Ha van szükség formális megjelenítésre
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -135,13 +126,6 @@ class GradeController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        // Ha van szükség formális megjelenítésre
-    }
 
     /**
      * Update the specified resource in storage.

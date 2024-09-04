@@ -74,11 +74,12 @@ class StudentController extends Controller
 
             $student = StudentModel::create($validatedData);
 
-            // Számítsd ki és frissítsd az átlagot
-            $student->updateGradesAverage();
+            // Hozzáadás az osztályhoz
+            $class = ClassModel::findOrFail($validatedData['class_id']);
+            $class->addStudent($student->id);
 
-            // Frissítsd az osztály diákjainak számát
-            $student->class->updateStudentsCount();
+            // Frissítsd az átlagot
+            $student->updateGradesAverage();
 
             return response()->json([
                 'status' => 'success',
@@ -144,19 +145,16 @@ class StudentController extends Controller
             $student->update($validatedData);
             $student->updateGradesAverage();
 
+            // Osztályváltás kezelése
             if ($student->class_id !== $originalClassId) {
-                if ($originalClassId) {
-                    $oldClass = ClassModel::find($originalClassId);
-                    if ($oldClass) {
-                        $oldClass->updateStudentsCount();
-                    }
+                $oldClass = ClassModel::find($originalClassId);
+                if ($oldClass) {
+                    $oldClass->removeStudent($student->id);
                 }
 
-                if ($student->class_id) {
-                    $newClass = ClassModel::find($student->class_id);
-                    if ($newClass) {
-                        $newClass->updateStudentsCount();
-                    }
+                $newClass = ClassModel::find($student->class_id);
+                if ($newClass) {
+                    $newClass->addStudent($student->id);
                 }
             }
 

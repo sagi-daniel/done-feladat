@@ -3,34 +3,23 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\ClassModel;
+use App\Models\StudentModel;
 
 class UpdateStudentDataSeeder extends Seeder
 {
     public function run()
     {
-        $this->updateStudentsCount();
         $this->updateGradeAvg();
     }
 
-    private function updateStudentsCount()
-    {
-        $classes = DB::table('classes')->get();
-
-        foreach ($classes as $class) {
-            $studentsCount = DB::table('students')->where('class_id', $class->id)->count();
-            DB::table('classes')->where('id', $class->id)->update(['students_count' => $studentsCount]);
-        }
-    }
 
     private function updateGradeAvg()
     {
-        $students = DB::table('students')->get();
+        $students = StudentModel::all();
 
         foreach ($students as $student) {
-            $avg = DB::table('grades')
-                ->where('student_id', $student->id)
-                ->avg('grade');
+            $avg = $student->grades()->avg('grade');
 
             if ($avg === null) {
                 $avg = 0;
@@ -38,9 +27,8 @@ class UpdateStudentDataSeeder extends Seeder
                 $avg = round($avg, 2);
             }
 
-            DB::table('students')
-                ->where('id', $student->id)
-                ->update(['grades_avg' => $avg]);
+            $student->grades_avg = $avg;
+            $student->save();
         }
     }
 }

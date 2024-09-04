@@ -14,17 +14,17 @@ class StudentModel extends Model
 
     protected $fillable = [
         'student_name',
-        'class_id',
-        'grades_avg',
         'student_phone',
+        'student_email',
         'student_address',
+        'grades_avg',
     ];
 
-    protected $hidden = ['class_id']; // populated
+    protected $hidden = ['class_id'];
 
-    public function class()
+    public function classes()
     {
-        return $this->belongsTo(ClassModel::class, 'class_id');
+        return $this->belongsToMany(ClassModel::class, 'class_student', 'student_id', 'class_id');
     }
 
     public function grades()

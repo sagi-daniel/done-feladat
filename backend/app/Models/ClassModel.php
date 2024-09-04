@@ -11,24 +11,16 @@ class ClassModel extends Model
 
     protected $table = 'classes';
 
+
     protected $fillable = [
         'class_name',
         'classroom',
         'teacher',
         'teacher_email',
-        'students_count',
     ];
 
     public function students()
     {
-        return $this->hasMany(StudentModel::class, 'class_id');
-    }
-
-    public function updateStudentsCount()
-    {
-        // Frissíti a diákok számát az adott osztályban
-        $studentCount = StudentModel::where('class_id', $this->id)->count();
-        $this->students_count = $studentCount;
-        $this->save();
+        return $this->belongsToMany(StudentModel::class, 'class_student', 'class_id', 'student_id');
     }
 }

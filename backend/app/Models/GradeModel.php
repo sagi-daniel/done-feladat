@@ -12,6 +12,7 @@ class GradeModel extends Model
         'student_id',
         'subject',
         'grade',
+        'class',
         'date',
     ];
 

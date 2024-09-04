@@ -96,8 +96,7 @@ class GradeController extends Controller
 
             $grade = GradeModel::create($validatedData);
 
-            // Számítsd ki és frissítsd a diák átlagát
-            $grade->student->updateGradesAverage();
+
 
             return response()->json([
                 'status' => 'success',
@@ -166,8 +165,7 @@ class GradeController extends Controller
             $grade = GradeModel::findOrFail($id);
             $grade->update($validatedData);
 
-            // Számítsd ki és frissítsd a diák átlagát
-            $grade->student->updateGradesAverage();
+
 
             return response()->json([
                 'status' => 'success',
@@ -201,8 +199,7 @@ class GradeController extends Controller
             $grade = GradeModel::findOrFail($id);
             $grade->delete();
 
-            // Számítsd ki és frissítsd a diák átlagát
-            $grade->student->updateGradesAverage();
+
 
             return response()->json([
                 'status' => 'success',

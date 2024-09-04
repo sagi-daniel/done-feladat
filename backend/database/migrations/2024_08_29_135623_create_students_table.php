@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('student_phone');
             $table->string('student_email')->nullable();
             $table->string('student_address')->nullable();
-            $table->decimal('grades_avg', 5, 2)->nullable()->default(null);
             $table->timestamps();
             $table->softDeletes();
 

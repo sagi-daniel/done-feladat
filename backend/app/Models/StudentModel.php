@@ -18,7 +18,7 @@ class StudentModel extends Model
         'student_phone',
         'student_email',
         'student_address',
-        'grades_avg',
+
     ];
 
     public function classes()
@@ -29,11 +29,5 @@ class StudentModel extends Model
     public function grades()
     {
         return $this->hasMany(GradeModel::class, 'student_id');
-    }
-
-    public function updateGradesAverage()
-    {
-        $average = $this->grades()->avg('grade') ?? 0;
-        $this->update(['grades_avg' => $average]);
     }
 }

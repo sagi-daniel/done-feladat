@@ -31,12 +31,12 @@ class StudentController extends Controller
             $query->where('class_id', $request->input('class'));
         }
 
-        if ($request->has('grades_avg_from') && $request->has('grades_avg_to')) {
-            $query->whereBetween('grades_avg', [
-                $request->input('grades_avg_from'),
-                $request->input('grades_avg_to')
-            ]);
-        }
+        // if ($request->has('grades_avg_from') && $request->has('grades_avg_to')) {
+        //     $query->whereBetween('grades_avg', [
+        //         $request->input('grades_avg_from'),
+        //         $request->input('grades_avg_to')
+        //     ]);
+        // }
 
         $perPage = $request->input('per_page', 10);
 
@@ -76,7 +76,7 @@ class StudentController extends Controller
             $class = ClassModel::findOrFail($validatedData['class_id']);
 
             $class->students()->attach($student->id);
-            $student->updateGradesAverage();
+
 
             return response()->json([
                 'status' => 'success',
@@ -100,15 +100,34 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         try {
-
             $student = StudentModel::with('classes')->findOrFail($id);
+
+            $grades = $student->grades()
+                ->with('subject')
+                ->paginate(10);
+
+            $averageGradesBySubject = $student->grades()
+                ->selectRaw('subject_id, AVG(grade) as average_grade')
+                ->groupBy('subject_id')
+                ->with('subject')
+                ->get();
 
             return response()->json([
                 'status' => 'success',
-                'data' => $student,
+                'data' => [
+                    'student' => $student,
+                    'grades' => [
+                        'data' => $grades->items(),
+                        'totalItems' => $grades->total(),
+                        'currentPage' => $grades->currentPage(),
+                        'lastPage' => $grades->lastPage(),
+                        'perPage' => $grades->perPage(),
+                    ],
+                    'average_grades_by_subject' => $averageGradesBySubject
+                ],
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -117,6 +136,8 @@ class StudentController extends Controller
             ], 404);
         }
     }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -142,7 +163,7 @@ class StudentController extends Controller
             $originalClassId = $student->class_id;
 
             $student->update($validatedData);
-            $student->updateGradesAverage();
+
 
             if (isset($validatedData['class_id']) && $validatedData['class_id'] != $originalClassId) {
                 if ($originalClassId) {

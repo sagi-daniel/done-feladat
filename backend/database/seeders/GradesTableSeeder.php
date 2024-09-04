@@ -13,9 +13,10 @@ class GradesTableSeeder extends Seeder
     {
         $faker = Faker::create('hu_HU');
 
-        $numGradesPerStudent = 2;
+        $numGradesPerStudent = 11;
 
         $studentIds = DB::table('students')->pluck('id')->toArray();
+        $subjectIds = DB::table('subjects')->pluck('id')->toArray();
 
         $grades = [];
 
@@ -23,8 +24,8 @@ class GradesTableSeeder extends Seeder
             for ($i = 0; $i < $numGradesPerStudent; $i++) {
                 $grades[] = [
                     'student_id' => $studentId,
+                    'subject_id' => $faker->randomElement($subjectIds),
                     'grade' => $faker->numberBetween(1, 5),
-                    'subject' => $faker->word,
                     'date' => $faker->date,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),

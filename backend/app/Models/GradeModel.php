@@ -15,32 +15,20 @@ class GradeModel extends Model
 
     protected $fillable = [
         'student_id',
-        'subject',
+        'subject_id',
         'grade',
-        'class',
         'date',
     ];
 
-    public static function boot()
+
+    public function subject()
     {
-        parent::boot();
-
-        // Esemény figyelése létrehozáskor, frissítéskor és törléskor
-        static::created(function ($grade) {
-            $grade->student->updateGradesAverage();
-        });
-
-        static::updated(function ($grade) {
-            $grade->student->updateGradesAverage();
-        });
-
-        static::deleted(function ($grade) {
-            $grade->student->updateGradesAverage();
-        });
+        return $this->belongsTo(SubjectModel::class, 'subject_id');
     }
 
-    public function student()
+
+    public function grades()
     {
-        return $this->belongsTo(StudentModel::class, 'student_id');
+        return $this->hasMany(GradeModel::class, 'student_id');
     }
 }

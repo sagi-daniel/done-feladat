@@ -15,10 +15,8 @@ class StudentsTableSeeder extends Seeder
     {
         $faker = Faker::create('hu_HU');
 
-        // Az osztályok azonosítói
         $classIds = ClassModel::pluck('id')->toArray();
 
-        // Diákok beszúrása
         $students = [];
         $numStudents = rand(400, 500);
 
@@ -36,11 +34,9 @@ class StudentsTableSeeder extends Seeder
             ];
         }
 
-        // Diákok beszúrása
         DB::table('students')->insert($students);
 
-        // Diákok és osztályok közötti kapcsolatok frissítése
-        $students = DB::table('students')->get(); // Lekérjük az újonnan beszúrt diákokat
+        $students = DB::table('students')->get();
 
         foreach ($students as $student) {
             $class = ClassModel::find($student->class_id);

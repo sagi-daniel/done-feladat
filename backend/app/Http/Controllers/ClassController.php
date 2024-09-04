@@ -13,14 +13,19 @@ class ClassController extends Controller
      */
     public function index(Request $request)
     {
-
         $perPage = $request->input('per_page', 10);
 
         $classes = ClassModel::paginate($perPage);
 
+        $classesArray = $classes->getCollection()->map(function ($class) {
+            $classArray = $class->toArray();
+            $classArray['students_count'] = $class->student_count;
+            return $classArray;
+        });
+
         return response()->json([
             'status' => 'success',
-            'data' => $classes->items(),
+            'data' => $classesArray,
             'totalItems' => $classes->total(),
             'currentPage' => $classes->currentPage(),
             'lastPage' => $classes->lastPage(),
@@ -62,7 +67,7 @@ class ClassController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'status' => 'error',
-                'errors' => $e->errors(), // Validation errors
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             return response()->json([
@@ -80,9 +85,14 @@ class ClassController extends Controller
     {
         try {
             $class = ClassModel::findOrFail($id);
+
+
+            $classArray = $class->toArray();
+            $classArray['student_count'] = $class->student_count;
+
             return response()->json([
                 'status' => 'success',
-                'data' => $class,
+                'data' => $classArray,
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([

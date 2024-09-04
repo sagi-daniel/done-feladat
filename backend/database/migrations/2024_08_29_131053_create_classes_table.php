@@ -17,7 +17,6 @@ return new class extends Migration
             $table->integer('classroom');
             $table->string('teacher');
             $table->string('teacher_email');
-            $table->json('student_ids')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

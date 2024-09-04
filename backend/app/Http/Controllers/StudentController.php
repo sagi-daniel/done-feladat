@@ -17,7 +17,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
 
-        $query = StudentModel::with('class');
+        $query = StudentModel::with('classes');
 
         if ($request->has('name')) {
             $query->where('student_name', 'like', '%' . $request->input('name') . '%');
@@ -73,12 +73,9 @@ class StudentController extends Controller
             $validatedData = $request->validate($rules, $messages);
 
             $student = StudentModel::create($validatedData);
-
-            // Hozzáadás az osztályhoz
             $class = ClassModel::findOrFail($validatedData['class_id']);
-            $class->addStudent($student->id);
 
-            // Frissítsd az átlagot
+            $class->students()->attach($student->id);
             $student->updateGradesAverage();
 
             return response()->json([
@@ -94,9 +91,11 @@ class StudentController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while creating the student.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -105,7 +104,7 @@ class StudentController extends Controller
     {
         try {
 
-            $student = StudentModel::with('class')->findOrFail($id);
+            $student = StudentModel::with('classes')->findOrFail($id);
 
             return response()->json([
                 'status' => 'success',
@@ -145,16 +144,16 @@ class StudentController extends Controller
             $student->update($validatedData);
             $student->updateGradesAverage();
 
-            // Osztályváltás kezelése
-            if ($student->class_id !== $originalClassId) {
-                $oldClass = ClassModel::find($originalClassId);
-                if ($oldClass) {
-                    $oldClass->removeStudent($student->id);
+            if (isset($validatedData['class_id']) && $validatedData['class_id'] != $originalClassId) {
+                if ($originalClassId) {
+                    $originalClass = ClassModel::find($originalClassId);
+                    if ($originalClass) {
+                        $originalClass->students()->detach($student->id);
+                    }
                 }
-
-                $newClass = ClassModel::find($student->class_id);
+                $newClass = ClassModel::find($validatedData['class_id']);
                 if ($newClass) {
-                    $newClass->addStudent($student->id);
+                    $newClass->students()->attach($student->id);
                 }
             }
 
@@ -187,16 +186,9 @@ class StudentController extends Controller
     {
         try {
             $student = StudentModel::findOrFail($id);
-            $classId = $student->class_id;
 
+            $student->classes()->detach();
             $student->delete();
-
-            if ($classId) {
-                $class = ClassModel::find($classId);
-                if ($class) {
-                    $class->updateStudentsCount();
-                }
-            }
 
             return response()->json([
                 'status' => 'success',

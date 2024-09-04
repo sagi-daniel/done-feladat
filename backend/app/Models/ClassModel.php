@@ -23,4 +23,9 @@ class ClassModel extends Model
     {
         return $this->belongsToMany(StudentModel::class, 'class_student', 'class_id', 'student_id');
     }
+
+    public function getStudentCountAttribute()
+    {
+        return $this->students()->count();
+    }
 }

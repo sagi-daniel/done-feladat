@@ -11,6 +11,7 @@ const studentsStore = useStudentsStore()
 
 const isFormModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
+
 const selectedStudent = ref(null)
 
 onMounted(() => {
@@ -66,6 +67,7 @@ const onPageChange = async page => {
         :students="studentsStore.students"
         @open-form-modal="toggleFormModal"
         @open-delete-modal="toggleDeleteModal"
+        @open-details-modal="toggleDetailsModal"
       />
       <Pagination
         :currentPage="studentsStore.currentPage"

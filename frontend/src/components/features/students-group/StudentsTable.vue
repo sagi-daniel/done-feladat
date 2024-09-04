@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 import Button from '../../shared/Button.vue'
 
 const props = defineProps({
@@ -9,7 +10,9 @@ const props = defineProps({
   },
 })
 
-const emits = defineEmits(['open-form-modal', 'open-delete-modal'])
+const router = useRouter()
+
+const emits = defineEmits(['open-delete-modal', 'open-delete-modal'])
 
 const formHandler = studentItem => {
   emits('open-form-modal', studentItem)
@@ -17,6 +20,10 @@ const formHandler = studentItem => {
 
 const deleteHandler = studentItem => {
   emits('open-delete-modal', studentItem)
+}
+
+const detailsHandler = studentItem => {
+  router.push(`/students/${studentItem.id}`)
 }
 </script>
 
@@ -31,7 +38,7 @@ const deleteHandler = studentItem => {
         <th class="hidden md:table-cell">Telefon</th>
         <th>
           <Button className="btn-icon" :onClick="() => formHandler(null)">
-            <font-awesome-icon icon="plus" />
+            <font-awesome-icon icon="user-plus" />
           </Button>
         </th>
       </tr>
@@ -39,10 +46,13 @@ const deleteHandler = studentItem => {
     <tbody>
       <tr v-for="studentItem in students" :key="studentItem.id" class="text-center hover:bg-gray-100">
         <td>{{ studentItem.student_name }}</td>
-        <td>{{ studentItem.class.class_name }}</td>
+        <td>{{ studentItem.classes.class_name }}</td>
         <td>{{ studentItem.grades_avg }}</td>
         <td class="hidden md:table-cell">{{ studentItem.student_phone }}</td>
         <td class="flex justify-center items-center space-x-2">
+          <Button className="btn-icon" :onClick="() => detailsHandler(studentItem)">
+            <font-awesome-icon icon="address-card" />
+          </Button>
           <Button className="btn-icon" :onClick="() => formHandler(studentItem)">
             <font-awesome-icon icon="pencil" />
           </Button>

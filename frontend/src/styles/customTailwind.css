@@ -47,17 +47,21 @@
 
 @layer utilities {
   .btn-add {
-    @apply text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2 bg-action text-btn-t hover:bg-action-h disabled:bg-action-d;
+    @apply border border-none text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2 bg-action text-btn-t hover:bg-action-h disabled:bg-action-d;
   }
   .btn-delete {
-    @apply bg-delete text-text-delete text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2;
+    @apply border border-none bg-delete text-text-delete text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2;
+  }
+  .btn-icon-square {
+    @apply border border-none px-3 py-2  rounded-lg  bg-action text-btn-t hover:bg-action-h;
   }
   .btn-icon {
-    @apply px-3 py-2 border rounded-lg  bg-action text-btn-t hover:bg-action-h;
+    @apply border border-none text-xl text-action hover:text-action-h;
   }
   .btn-cancel {
-    @apply text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2   text-primary;
+    @apply border border-none text-xs md:text-lg px-4 md:px-8 py-2 rounded-lg flex justify-center items-center gap-2   text-primary;
   }
+
   .input {
     @apply border p-2 rounded-lg;
   }

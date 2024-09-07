@@ -30,18 +30,20 @@ const deleteHandler = gradeItem => {
         <th>Dátum</th>
         <th>Osztály</th>
         <th>
-          <Button className="btn-icon" :onClick="() => formHandler(null)">
+          <Button className="btn-icon-square space-x-4" :onClick="() => formHandler(null)">
             <font-awesome-icon icon="plus" />
+            <font-awesome-icon icon="book" />
           </Button>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="gradeItem in grades" :key="gradeItem.id" class="text-center hover:bg-gray-100">
-        <td class="hidden md:table-cell">{{ gradeItem.date }}</td>
+      <tr v-for="gradeItem in props.grades" :key="gradeItem.id" class="text-center hover:bg-gray-100">
         <td>{{ gradeItem.student.student_name }}</td>
-        <td>{{ gradeItem.subject }}</td>
+        <td>{{ gradeItem.subject.subject_name }}</td>
         <td>{{ gradeItem.grade }}</td>
+        <td>{{ gradeItem.date }}</td>
+        <td>{{ gradeItem.student.classes[0] ? gradeItem.student.classes[0].class_name : 'N/A' }}</td>
         <td class="flex justify-center items-center space-x-2">
           <Button className="btn-icon" :onClick="() => formHandler(gradeItem)">
             <font-awesome-icon icon="pencil" />

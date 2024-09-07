@@ -16,11 +16,14 @@ import {
   faBook,
   faUserPlus,
   faAddressCard,
+  faCircleInfo,
+  faChevronDown,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faChevronLeft,
   faChevronRight,
+  faChevronDown,
   faTrash,
   faPencil,
   faPlus,
@@ -28,7 +31,8 @@ library.add(
   faUserGraduate,
   faBook,
   faUserPlus,
-  faAddressCard
+  faAddressCard,
+  faCircleInfo
 )
 
 const pinia = createPinia()

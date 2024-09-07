@@ -28,7 +28,7 @@ watch(
     if (newClass && Object.keys(newClass).length > 0) {
       studentForm.value = {
         student_name: newClass.student_name || '',
-        class_id: newClass.class.id || 0,
+        class_id: newClass.class_id || 0,
         student_phone: newClass.student_phone || '',
         student_address: newClass.student_address || '',
       }

@@ -15,7 +15,6 @@ import {
   faUserGraduate,
   faBook,
   faUserPlus,
-  faAddressCard,
   faCircleInfo,
   faChevronDown,
 } from '@fortawesome/free-solid-svg-icons'
@@ -31,7 +30,6 @@ library.add(
   faUserGraduate,
   faBook,
   faUserPlus,
-  faAddressCard,
   faCircleInfo
 )
 

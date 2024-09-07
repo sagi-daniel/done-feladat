@@ -13,7 +13,7 @@ function goToInbox() {
 
 <template>
   <div class="flex flex-col items-center justify-center text-content">
-    <div class="text-center mt-10">
+    <div class="text-center mt-40">
       <h1 class="text-9xl font-extrabold text-perm-text">404</h1>
       <h3 class="text-2xl md:text-3xl mb-3">Oldal nem található</h3>
       <p class="text-lg md:text-xl mb-8">Az oldal, amit keresel, nem található.</p>

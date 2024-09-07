@@ -85,10 +85,15 @@ const onPageChange = async page => {
       :selectedGrade="selectedGrade"
       @handle-delete="onDelete"
       @cancel-delete="toggleDeleteModal"
-      ><p class="text-lg text-center">
-        Biztosan törölni szeretné a <br />
-        <span class="font-semibold">{{ `${selectedGrade.subject} ${selectedGrade.grade}` }} érdemjegyet!</span>?
-      </p></DeleteAlertModal
     >
+      <p v-if="selectedGrade && selectedGrade.subject" class="text-lg text-center">
+        Biztosan törölni szeretné a <br />
+        <span class="font-semibold">
+          {{ `${selectedGrade.subject.subject_name} ${selectedGrade.grade}` }} érdemjegyet!
+        </span>
+        ?
+      </p>
+      <p v-else class="text-lg text-center">Nincs kiválasztott érdemjegy!</p>
+    </DeleteAlertModal>
   </section>
 </template>

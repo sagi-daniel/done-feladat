@@ -35,6 +35,10 @@ const toggleFormModal = studentItem => {
   isFormModalOpen.value = !isFormModalOpen.value
 }
 
+const toggleDetailsModal = studentItem => {
+  selectedStudent.value = studentItem
+}
+
 const onDelete = async () => {
   if (selectedStudent.value) {
     await studentsStore.removeStudent(selectedStudent.value.id)

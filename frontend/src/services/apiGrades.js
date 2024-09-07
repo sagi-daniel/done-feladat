@@ -27,6 +27,15 @@ export const fetchGradeById = async id => {
   }
 }
 
+export const fetchGradesByStudent = async (id, queryParams = {}) => {
+  try {
+    const response = await apiClient.get(`/students/${id}/grades`, { params: queryParams })
+    return response.data
+  } catch (error) {
+    throw handleApiError(error)
+  }
+}
+
 export const updateGradeById = async (id, gradeData) => {
   try {
     const response = await apiClient.put(`/grades/${id}`, gradeData)

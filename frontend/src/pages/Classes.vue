@@ -9,7 +9,6 @@ import LoadingSpinner from '../components/shared/LoadingSpinner.vue'
 
 const classesStore = useClassesStore()
 
-const isFormModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
 const selectedClass = ref(null)
 
@@ -29,25 +28,10 @@ const toggleDeleteModal = classItem => {
   isDeleteModalOpen.value = !isDeleteModalOpen.value
 }
 
-const toggleFormModal = classItem => {
-  selectedClass.value = classItem
-  isFormModalOpen.value = !isFormModalOpen.value
-}
-
 const onDelete = async () => {
   if (selectedClass.value) {
     await classesStore.removeClass(selectedClass.value.id)
     isDeleteModalOpen.value = false
-  }
-}
-
-const onSave = async classItem => {
-  if (selectedClass.value) {
-    await classesStore.editClass(selectedClass.value.id, classItem)
-    isFormModalOpen.value = false
-  } else {
-    await classesStore.addClass(classItem)
-    isFormModalOpen.value = false
   }
 }
 

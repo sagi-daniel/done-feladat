@@ -69,6 +69,36 @@ export const useStudentsStore = defineStore('students', {
       }
     },
 
+    async getStudentsByClassId(classId) {
+      this.isLoading = true
+      this.error = null
+
+      try {
+        const params = {
+          page: this.currentPage,
+          perPage: this.perPage,
+          class: classId,
+        }
+
+        const response = await fetchStudents(params)
+
+        this.students = response.data
+        this.totalItems = response.totalItems
+        this.currentPage = response.currentPage
+        this.lastPage = response.lastPage
+        this.perPage = response.perPage
+      } catch (error) {
+        this.error = error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async changeGradesPage(page) {
+      this.gradesCurrentPage = page
+      await this.getStudentById(this.studentDetails.id)
+    },
+
     async addStudent(studentData) {
       this.isLoading = true
       this.error = null

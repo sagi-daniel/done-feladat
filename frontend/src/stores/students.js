@@ -10,13 +10,15 @@ import {
 export const useStudentsStore = defineStore('students', {
   state: () => ({
     students: [],
+    studentDetails: null,
     totalItems: 0,
     currentPage: 1,
     lastPage: 1,
     perPage: 10,
     isLoading: false,
     error: null,
-    studentDetails: null,
+    gradesAverageBySubject: [],
+    gradesAvgCommon: 0,
   }),
 
   actions: {
@@ -50,8 +52,16 @@ export const useStudentsStore = defineStore('students', {
       this.error = null
 
       try {
-        const response = await fetchStudentById(id)
-        this.studentDetails = response
+        const params = {
+          gradesPage: this.gradesCurrentPage,
+          gradesPerPage: this.gradesPerPage,
+        }
+
+        const response = await fetchStudentById(id, params)
+
+        this.studentDetails = response.data.student
+        this.gradesAverageBySubject = response.data.average_grades_by_subject.data
+        this.gradesAvgCommon = response.data.average_grades_by_subject.grades_avg
       } catch (error) {
         this.error = error
       } finally {
@@ -109,6 +119,5 @@ export const useStudentsStore = defineStore('students', {
 
   getters: {
     totalPages: state => state.lastPage,
-    studentCount: state => state.students.length,
   },
 })

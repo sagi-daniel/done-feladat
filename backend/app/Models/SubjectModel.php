@@ -3,17 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SubjectModel extends Model
 {
 
-    use SoftDeletes;
+    protected $table = 'subjects';
 
-    protected $table = 'grades';
+    protected $fillable = [
+        'subject_name',
+    ];
 
     public function grades()
     {
-        return $this->hasMany(GradeModel::class);
+        return $this->hasMany(GradeModel::class, 'subject_id');
     }
 }

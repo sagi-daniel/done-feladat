@@ -26,9 +26,8 @@ class GradeModel extends Model
         return $this->belongsTo(SubjectModel::class, 'subject_id');
     }
 
-
-    public function grades()
+    public function student()
     {
-        return $this->hasMany(GradeModel::class, 'student_id');
+        return $this->belongsTo(StudentModel::class, 'student_id');
     }
 }

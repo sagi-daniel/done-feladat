@@ -16,7 +16,6 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-
         $query = StudentModel::with('classes');
 
         if ($request->has('name')) {
@@ -32,18 +31,32 @@ class StudentController extends Controller
         }
 
         $perPage = $request->input('per_page', 10);
-
         $students = $query->paginate($perPage);
+
+        $studentsArray = $students->items();
+
+        foreach ($studentsArray as $student) {
+
+            $averageGradesBySubject = $student->grades()
+                ->selectRaw('subject_id, AVG(grade) as average_grade')
+                ->groupBy('subject_id')
+                ->get();
+
+            $totalAverageGrade = $averageGradesBySubject->avg('average_grade');
+
+            $student->grades_avg = $totalAverageGrade;
+        }
 
         return response()->json([
             'status' => 'success',
-            'data' => $students->items(),
+            'data' => $studentsArray,
             'totalItems' => $students->total(),
             'currentPage' => $students->currentPage(),
             'lastPage' => $students->lastPage(),
             'perPage' => $students->perPage(),
         ], 200);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -98,28 +111,22 @@ class StudentController extends Controller
         try {
             $student = StudentModel::with('classes')->findOrFail($id);
 
-            $grades = $student->grades()
-                ->with('subject')
-                ->paginate(10);
-
             $averageGradesBySubject = $student->grades()
                 ->selectRaw('subject_id, AVG(grade) as average_grade')
                 ->groupBy('subject_id')
                 ->with('subject')
                 ->get();
 
+            $totalAverageGrade = $averageGradesBySubject->avg('average_grade');
+
             return response()->json([
                 'status' => 'success',
                 'data' => [
                     'student' => $student,
-                    'grades' => [
-                        'data' => $grades->items(),
-                        'totalItems' => $grades->total(),
-                        'currentPage' => $grades->currentPage(),
-                        'lastPage' => $grades->lastPage(),
-                        'perPage' => $grades->perPage(),
+                    'average_grades_by_subject' => [
+                        'data' => $averageGradesBySubject,
+                        'grades_avg' => $totalAverageGrade,
                     ],
-                    'average_grades_by_subject' => $averageGradesBySubject
                 ],
             ], 200);
         } catch (ModelNotFoundException $e) {
@@ -129,8 +136,6 @@ class StudentController extends Controller
             ], 404);
         }
     }
-
-
 
     /**
      * Update the specified resource in storage.

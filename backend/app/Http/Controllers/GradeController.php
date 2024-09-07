@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GradeModel;
-use App\Models\StudentModel;
+use App\Models\GradeModel;;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,26 +16,30 @@ class GradeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = GradeModel::query();
+        $query = GradeModel::with('subject', 'student.classes',);
 
         if ($request->has('student_name')) {
             $query->join('students', 'grades.student_id', '=', 'students.id')
                 ->where('students.student_name', 'like', '%' . $request->input('student_name') . '%')
                 ->select('grades.*', 'students.student_name');
-        } else {
-            $query->with('student');
         }
 
-
-        if ($request->has('subject')) {
-            $query->where('subject', 'like', '%' . $request->input('subject') . '%');
+        if ($request->has('subject_name')) {
+            $query->join('subjects', 'grades.subject_id', '=', 'subjects.id')
+                ->where('subjects.subject_name', 'like', '%' . $request->input('subject_name') . '%')
+                ->select('grades.*', 'subjects.subject_name');
         }
 
+        if ($request->has('class_name')) {
+            $query->join('classes', 'grades.class_id', '=', 'classes.id')  // Kapcsolat az osztályhoz
+                ->where('classes.class_name', 'like', '%' . $request->input('class_name') . '%')
+                ->select('grades.*', 'classes.class_name');
+        }
 
+        // Egyéb feltételek
         if ($request->has('grade')) {
             $query->where('grade', $request->input('grade'));
         }
-
 
         if ($request->has('date_from') && $request->has('date_to')) {
             $query->whereBetween('date', [
@@ -61,8 +65,6 @@ class GradeController extends Controller
             'perPage' => $grades->perPage(),
         ], 200);
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -173,6 +175,56 @@ class GradeController extends Controller
             ], 500);
         }
     }
+
+    public function byStudent($student_id, Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+
+            $grades = GradeModel::with('subject')
+                ->where('student_id', $student_id)
+                ->paginate($perPage);
+
+            if ($grades->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No grades found for this student.',
+                ], 404);
+            }
+
+            $formattedGrades = $grades->items();
+
+            $formattedGrades = array_map(function ($grade) {
+                return [
+                    'id' => $grade->id,
+                    'student_id' => $grade->student_id,
+                    'subject_id' => $grade->subject_id,
+                    'subject_name' => $grade->subject ? $grade->subject->subject_name : 'N/A',
+                    'grade' => $grade->grade,
+                    'date' => $grade->date,
+                    'created_at' => $grade->created_at,
+                    'updated_at' => $grade->updated_at,
+                    'deleted_at' => $grade->deleted_at,
+                ];
+            }, $formattedGrades);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedGrades,
+                'totalItems' => $grades->total(),
+                'currentPage' => $grades->currentPage(),
+                'lastPage' => $grades->lastPage(),
+                'perPage' => $grades->perPage(),
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error retrieving grades for student: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while retrieving grades.',
+            ], 500);
+        }
+    }
+
 
     /**
      * Remove the specified resource from storage.

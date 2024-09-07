@@ -4,6 +4,8 @@ import { now } from '../../../utils/helpers'
 import Modal from '../../shared/Modal.vue'
 import Button from '../../shared/Button.vue'
 import Input from '../../shared/Input.vue'
+import SelectInput from '../../shared/SelectInput.vue'
+import { GRADES, SUBJECTS } from '../../../utils/constants'
 
 const props = defineProps({
   isOpen: {
@@ -30,7 +32,7 @@ watch(
       gradeForm.value = {
         date: newGrade.date || now(),
         student_id: newGrade.student_id || 0,
-        subject: newGrade.subject || '',
+        subject: newGrade.subject.subject_name || '',
         grade: newGrade.grade || 0,
       }
     } else {
@@ -59,6 +61,7 @@ const onClose = () => {
 <template>
   <Modal :isOpen="isOpen" @close="onClose">
     <h1>{{ selectedGrade && Object.keys(selectedGrade).length > 0 ? 'Szerkesztés' : 'Létrehozás' }}</h1>
+    <small v-if="selectedGrade">{{ selectedGrade.student.student_name }}</small>
     <form @submit.prevent="onSave" class="flex flex-col gap-5 justify-between">
       <Input type="date" label="Dátum" v-model="gradeForm.date" :required="true" placeholder="Adja meg a dátumot..." />
       <Input
@@ -66,21 +69,24 @@ const onClose = () => {
         label="Tanuló"
         v-model="gradeForm.student_id"
         :required="true"
+        :disabled="true"
         placeholder="Adja meg a tanulót..."
       />
-      <Input
-        type="text"
-        label="Tantárgy"
-        v-model="gradeForm.subject"
-        :required="true"
-        placeholder="Adja meg a tantárgy nevét..."
-      />
-      <Input
-        type="number"
+
+      <SelectInput
         label="Érdemjegy"
+        :options="SUBJECTS"
         v-model="gradeForm.grade"
         :required="true"
-        placeholder="Adja meg az érdemjegyet!"
+        placeholder="Válassza ki a tantárgyat!"
+      />
+
+      <SelectInput
+        label="Érdemjegy"
+        :options="GRADES"
+        v-model="gradeForm.grade"
+        :required="true"
+        placeholder="Válassza ki a megfelelő érdemjegyet!"
       />
       <Button type="submit" className="btn-add"> Mentés </Button>
     </form>

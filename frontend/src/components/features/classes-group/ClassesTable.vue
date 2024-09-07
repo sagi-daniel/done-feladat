@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 import Button from '../../shared/Button.vue'
 
 const props = defineProps({
@@ -9,10 +10,12 @@ const props = defineProps({
   },
 })
 
-const emits = defineEmits(['open-form-modal', 'open-delete-modal'])
+const router = useRouter()
+
+const emits = defineEmits(['open-delete-modal'])
 
 const formHandler = classItem => {
-  emits('open-form-modal', classItem)
+  router.push(`/classes/${classItem.id}`)
 }
 
 const deleteHandler = classItem => {
@@ -26,11 +29,12 @@ const deleteHandler = classItem => {
       <tr class="text-center">
         <th>Osztály</th>
         <th>Osztályterem</th>
-        <th class="hidden md:table-cell">Tanár</th>
-        <th class="hidden md:table-cell">Email</th>
+        <th class="hidden md:table-cell">Osztályfőnök</th>
+        <th class="hidden md:table-cell">Osztályfőnök email</th>
         <th>Létszám</th>
         <th>
-          <Button className="btn-icon" :onClick="() => formHandler(null)">
+          <Button className="btn-icon-square space-x-4" :onClick="() => formHandler(null)">
+            <font-awesome-icon icon="landmark" />
             <font-awesome-icon icon="plus" />
           </Button>
         </th>
@@ -44,8 +48,8 @@ const deleteHandler = classItem => {
         <td class="hidden md:table-cell">{{ classItem.teacher_email }}</td>
         <td>{{ classItem.students_count }}</td>
         <td class="flex justify-center items-center space-x-2">
-          <Button className="btn-icon" :onClick="() => formHandler(classItem)">
-            <font-awesome-icon icon="pencil" />
+          <Button className="btn-icon " :onClick="() => formHandler(classItem)">
+            <font-awesome-icon icon="circle-info" />
           </Button>
           <Button className="btn-icon" :onClick="() => deleteHandler(classItem)">
             <font-awesome-icon icon="trash" />

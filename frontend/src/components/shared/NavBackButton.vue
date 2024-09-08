@@ -9,7 +9,7 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div class="flex items-start mb-6">
+  <div class="flex justify-start items-start mb-6">
     <button class="btn-icon-square" @click="handleClick">
       <font-awesome-icon icon="chevron-left" />
       Vissza

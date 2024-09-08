@@ -1,6 +1,5 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
-import Modal from '../../shared/Modal.vue'
 import Button from '../../shared/Button.vue'
 import Input from '../../shared/Input.vue'
 
@@ -44,14 +43,10 @@ watch(
   { immediate: true }
 )
 
-const emits = defineEmits(['handle-save', 'cancel-save'])
+const emits = defineEmits(['handle-save'])
 
 const onSave = () => {
   emits('handle-save', classForm.value)
-}
-
-const onClose = () => {
-  emits('cancel-save')
 }
 
 const isFormValid = computed(() => {
@@ -65,7 +60,7 @@ const isFormValid = computed(() => {
 </script>
 
 <template>
-  <Modal :isOpen="isOpen" @close="onClose">
+  <div>
     <h1>{{ selectedClass && Object.keys(selectedClass).length > 0 ? 'Szerkesztés' : 'Létrehozás' }}</h1>
     <form @submit.prevent="onSave" class="flex flex-col gap-5 justify-between">
       <Input
@@ -98,7 +93,6 @@ const isFormValid = computed(() => {
       />
       <Button type="submit" className="btn-add" :disabled="!isFormValid"> Mentés </Button>
     </form>
-
     <!-- TODO új diák létrehozása megoldás (később)  -->
-  </Modal>
+  </div>
 </template>

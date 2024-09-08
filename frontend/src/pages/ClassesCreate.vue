@@ -1,56 +1,72 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useClassesStore } from '../stores/classes'
-import Pagination from '../components/shared/Pagination.vue'
-import LoadingSpinner from '../components/shared/LoadingSpinner.vue'
+import Section from '../components/shared/Section.vue'
+import ClassesForm from '../components/features/classes-group/ClassesForm.vue'
+import NavBackButton from '../components/shared/NavBackButton.vue'
 
 const classesStore = useClassesStore()
 
-const isFormModalOpen = ref(false)
-const isDeleteModalOpen = ref(false)
-const selectedClass = ref(null)
-
 const router = useRouter()
+const route = useRoute()
+const classId = computed(() => route.query.id)
+
+const currentClass = ref(null)
+const isStudentFormModalOpen = ref(false)
+const isStudentDeleteModalOpen = ref(false)
+const selectedStudent = ref(null)
+
+const fetchClass = async id => {
+  if (id) {
+    await classesStore.getClassById(id)
+    currentClass.value = classesStore.class // Assuming `class` is the name of the class data in the store
+  } else {
+    currentClass.value = {} // Initialize with empty object for new class
+  }
+}
 
 onMounted(() => {
-  classesStore.getClasses()
+  fetchClass(classId.value)
 })
 
-watch(
-  () => classesStore.currentPage,
-  () => {
-    classesStore.getClasses()
-  }
-)
+// Watch for changes in the classId and fetch the class data accordingly
+watch(classId, newId => {
+  fetchClass(newId)
+})
 
 const toggleDeleteModal = classItem => {
-  selectedClass.value = classItem
-  isDeleteModalOpen.value = !isDeleteModalOpen.value
+  console.log('toggleDeleteModal', classItem)
+  selectedStudent.value = classItem
+  isStudentDeleteModalOpen.value = !isStudentDeleteModalOpen.value
 }
 
 const toggleFormModal = classItem => {
-  selectedClass.value = classItem
-  isFormModalOpen.value = !isFormModalOpen.value
+  console.log('toggleFormModal', classItem)
+  selectedStudent.value = classItem
+  isStudentFormModalOpen.value = !isStudentFormModalOpen.value
 }
 
-const onSave = async classItem => {}
+const onSave = async () => {
+  if (currentClass.value.id) {
+    // Update existing class
+    console.log('update', currentClass.value)
+    // Perform update operation here
+  } else {
+    // Create new class
+    console.log('create', currentClass.value)
+    // Perform create operation here
+  }
+}
 
-//TODO bal felülre visszanyíl
-const onClose = () => {
+const handleBack = () => {
   router.push(`/classes`)
-}
-
-const onPageChange = async page => {
-  await classesStore.changePage(page)
 }
 </script>
 
 <template>
-  <section class="size-full flex flex-col justify-between md:p-20">
-    <div v-if="studentsStore.isLoading">
-      <LoadingSpinner />
-    </div>
-    <div v-else></div>
-  </section>
+  <Section :isLoading="classesStore.isLoading">
+    <NavBackButton @back="handleBack" />
+    <ClassesForm :selectedClass="currentClass" @handle-save="onSave" />
+  </Section>
 </template>

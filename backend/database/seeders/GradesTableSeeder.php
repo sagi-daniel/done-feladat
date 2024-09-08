@@ -11,13 +11,12 @@ class GradesTableSeeder extends Seeder
 {
     public function run()
     {
-        $faker = Faker::create();
+        $faker = Faker::create('hu_HU');
 
-        // Minden diákhoz 5 érdemjegyet rendelünk
-        $numGradesPerStudent = 2;
-
+        $numGradesPerStudent = 11;
 
         $studentIds = DB::table('students')->pluck('id')->toArray();
+        $subjectIds = DB::table('subjects')->pluck('id')->toArray();
 
         $grades = [];
 
@@ -25,9 +24,9 @@ class GradesTableSeeder extends Seeder
             for ($i = 0; $i < $numGradesPerStudent; $i++) {
                 $grades[] = [
                     'student_id' => $studentId,
-                    'grade' => $faker->numberBetween(1, 5), // Érdemjegy 1 és 5 között
-                    'subject' => $faker->word, // Új mező hozzáadása
-                    'date' => $faker->date, // Új mező hozzáadása
+                    'subject_id' => $faker->randomElement($subjectIds),
+                    'grade' => $faker->numberBetween(1, 5),
+                    'date' => $faker->date,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ];

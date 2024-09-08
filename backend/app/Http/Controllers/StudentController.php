@@ -16,46 +16,47 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        // Alap lekérdezés a tanulók listájához
-        $query = StudentModel::query();
+        $query = StudentModel::with('classes');
 
-        // Szűrés név alapján (részleges egyezés)
         if ($request->has('name')) {
             $query->where('student_name', 'like', '%' . $request->input('name') . '%');
         }
 
-        // Szűrés telefonszám alapján (részleges egyezés)
         if ($request->has('phone')) {
             $query->where('student_phone', 'like', '%' . $request->input('phone') . '%');
         }
 
-        // Szűrés osztály alapján (teljes egyezés)
         if ($request->has('class')) {
             $query->where('class_id', $request->input('class'));
         }
 
-        // Szűrés tanulmányi átlag alapján (tól-ig értékek)
-        if ($request->has('grades_avg_from') && $request->has('grades_avg_to')) {
-            $query->whereBetween('grades_avg', [
-                $request->input('grades_avg_from'),
-                $request->input('grades_avg_to')
-            ]);
-        }
-
-        $perPage = $request->input('per_page', 10); // Alapértelmezett érték: 10
-
-        // A helyes objektum használata a lapozáshoz
+        $perPage = $request->input('per_page', 10);
         $students = $query->paginate($perPage);
+
+        $studentsArray = $students->items();
+
+        foreach ($studentsArray as $student) {
+
+            $averageGradesBySubject = $student->grades()
+                ->selectRaw('subject_id, AVG(grade) as average_grade')
+                ->groupBy('subject_id')
+                ->get();
+
+            $totalAverageGrade = $averageGradesBySubject->avg('average_grade');
+
+            $student->grades_avg = $totalAverageGrade;
+        }
 
         return response()->json([
             'status' => 'success',
-            'data' => $students->items(),
+            'data' => $studentsArray,
             'totalItems' => $students->total(),
             'currentPage' => $students->currentPage(),
             'lastPage' => $students->lastPage(),
             'perPage' => $students->perPage(),
         ], 200);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -78,12 +79,10 @@ class StudentController extends Controller
             $validatedData = $request->validate($rules, $messages);
 
             $student = StudentModel::create($validatedData);
+            $class = ClassModel::findOrFail($validatedData['class_id']);
 
-            // Számítsd ki és frissítsd az átlagot
-            $student->updateGradesAverage();
+            $class->students()->attach($student->id);
 
-            // Frissítsd az osztály diákjainak számát
-            $student->class->updateStudentsCount();
 
             return response()->json([
                 'status' => 'success',
@@ -98,20 +97,37 @@ class StudentController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while creating the student.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
+
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         try {
-            $student = StudentModel::findOrFail($id);
+            $student = StudentModel::with('classes')->findOrFail($id);
+
+            $averageGradesBySubject = $student->grades()
+                ->selectRaw('subject_id, AVG(grade) as average_grade')
+                ->groupBy('subject_id')
+                ->with('subject')
+                ->get();
+
+            $totalAverageGrade = $averageGradesBySubject->avg('average_grade');
+
             return response()->json([
                 'status' => 'success',
-                'data' => $student,
+                'data' => [
+                    'student' => $student,
+                    'average_grades_by_subject' => [
+                        'data' => $averageGradesBySubject,
+                        'grades_avg' => $totalAverageGrade,
+                    ],
+                ],
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -145,21 +161,18 @@ class StudentController extends Controller
             $originalClassId = $student->class_id;
 
             $student->update($validatedData);
-            $student->updateGradesAverage();
 
-            if ($student->class_id !== $originalClassId) {
+
+            if (isset($validatedData['class_id']) && $validatedData['class_id'] != $originalClassId) {
                 if ($originalClassId) {
-                    $oldClass = ClassModel::find($originalClassId);
-                    if ($oldClass) {
-                        $oldClass->updateStudentsCount();
+                    $originalClass = ClassModel::find($originalClassId);
+                    if ($originalClass) {
+                        $originalClass->students()->detach($student->id);
                     }
                 }
-
-                if ($student->class_id) {
-                    $newClass = ClassModel::find($student->class_id);
-                    if ($newClass) {
-                        $newClass->updateStudentsCount();
-                    }
+                $newClass = ClassModel::find($validatedData['class_id']);
+                if ($newClass) {
+                    $newClass->students()->attach($student->id);
                 }
             }
 
@@ -192,16 +205,9 @@ class StudentController extends Controller
     {
         try {
             $student = StudentModel::findOrFail($id);
-            $classId = $student->class_id;
 
+            $student->classes()->detach();
             $student->delete();
-
-            if ($classId) {
-                $class = ClassModel::find($classId);
-                if ($class) {
-                    $class->updateStudentsCount();
-                }
-            }
 
             return response()->json([
                 'status' => 'success',

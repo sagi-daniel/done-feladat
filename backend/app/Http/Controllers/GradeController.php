@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GradeModel;
-use App\Models\StudentModel;
+use App\Models\GradeModel;;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,28 +16,31 @@ class GradeController extends Controller
      */
     public function index(Request $request)
     {
-        // Alap lekérdezés a jegyek listájához
-        $query = GradeModel::query();
+        $query = GradeModel::with('subject', 'student.classes',);
 
         if ($request->has('student_name')) {
             $query->join('students', 'grades.student_id', '=', 'students.id')
                 ->where('students.student_name', 'like', '%' . $request->input('student_name') . '%')
                 ->select('grades.*', 'students.student_name');
-        } else {
-            $query->with('student'); // Eager load the student relation if no student_name filter
         }
 
-        // Szűrés tantárgy alapján (részleges egyezés)
-        if ($request->has('subject')) {
-            $query->where('subject', 'like', '%' . $request->input('subject') . '%');
+        if ($request->has('subject_name')) {
+            $query->join('subjects', 'grades.subject_id', '=', 'subjects.id')
+                ->where('subjects.subject_name', 'like', '%' . $request->input('subject_name') . '%')
+                ->select('grades.*', 'subjects.subject_name');
         }
 
-        // Szűrés jegy érték alapján (teljes egyezés)
+        if ($request->has('class_name')) {
+            $query->join('classes', 'grades.class_id', '=', 'classes.id')  // Kapcsolat az osztályhoz
+                ->where('classes.class_name', 'like', '%' . $request->input('class_name') . '%')
+                ->select('grades.*', 'classes.class_name');
+        }
+
+        // Egyéb feltételek
         if ($request->has('grade')) {
             $query->where('grade', $request->input('grade'));
         }
 
-        // Szűrés dátum alapján (tól-ig értékek)
         if ($request->has('date_from') && $request->has('date_to')) {
             $query->whereBetween('date', [
                 $request->input('date_from'),
@@ -49,9 +52,8 @@ class GradeController extends Controller
             $query->where('date', '<=', $request->input('date_to'));
         }
 
-        $perPage = $request->input('per_page', 10); // Alapértelmezett érték: 10
+        $perPage = $request->input('per_page', 10);
 
-        // A lekérdezés futtatása lapozással
         $grades = $query->paginate($perPage);
 
         return response()->json([
@@ -62,15 +64,6 @@ class GradeController extends Controller
             'lastPage' => $grades->lastPage(),
             'perPage' => $grades->perPage(),
         ], 200);
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        // Ha van szükség formális megjelenítésre
     }
 
     /**
@@ -96,8 +89,7 @@ class GradeController extends Controller
 
             $grade = GradeModel::create($validatedData);
 
-            // Számítsd ki és frissítsd a diák átlagát
-            $grade->student->updateGradesAverage();
+
 
             return response()->json([
                 'status' => 'success',
@@ -136,13 +128,6 @@ class GradeController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        // Ha van szükség formális megjelenítésre
-    }
 
     /**
      * Update the specified resource in storage.
@@ -166,8 +151,7 @@ class GradeController extends Controller
             $grade = GradeModel::findOrFail($id);
             $grade->update($validatedData);
 
-            // Számítsd ki és frissítsd a diák átlagát
-            $grade->student->updateGradesAverage();
+
 
             return response()->json([
                 'status' => 'success',
@@ -192,6 +176,56 @@ class GradeController extends Controller
         }
     }
 
+    public function byStudent($student_id, Request $request)
+    {
+        try {
+            $perPage = $request->input('per_page', 10);
+
+            $grades = GradeModel::with('subject')
+                ->where('student_id', $student_id)
+                ->paginate($perPage);
+
+            if ($grades->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No grades found for this student.',
+                ], 404);
+            }
+
+            $formattedGrades = $grades->items();
+
+            $formattedGrades = array_map(function ($grade) {
+                return [
+                    'id' => $grade->id,
+                    'student_id' => $grade->student_id,
+                    'subject_id' => $grade->subject_id,
+                    'subject_name' => $grade->subject ? $grade->subject->subject_name : 'N/A',
+                    'grade' => $grade->grade,
+                    'date' => $grade->date,
+                    'created_at' => $grade->created_at,
+                    'updated_at' => $grade->updated_at,
+                    'deleted_at' => $grade->deleted_at,
+                ];
+            }, $formattedGrades);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedGrades,
+                'totalItems' => $grades->total(),
+                'currentPage' => $grades->currentPage(),
+                'lastPage' => $grades->lastPage(),
+                'perPage' => $grades->perPage(),
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error retrieving grades for student: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while retrieving grades.',
+            ], 500);
+        }
+    }
+
+
     /**
      * Remove the specified resource from storage.
      */
@@ -201,8 +235,7 @@ class GradeController extends Controller
             $grade = GradeModel::findOrFail($id);
             $grade->delete();
 
-            // Számítsd ki és frissítsd a diák átlagát
-            $grade->student->updateGradesAverage();
+
 
             return response()->json([
                 'status' => 'success',

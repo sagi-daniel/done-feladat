@@ -22,7 +22,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <button :class="className" :type="type" :disabled="disabled" @click="onClick">
+  <button :class="className" :type="type" :disabled="disabled" @click="onClick ? onClick() : null">
     <slot />
   </button>
 </template>

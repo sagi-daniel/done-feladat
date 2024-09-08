@@ -1,11 +1,10 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useClassesStore } from '../stores/classes'
+import Section from '../components/shared/Section.vue'
 import ClassesTable from '../components/features/classes-group/ClassesTable.vue'
 import Pagination from '../components/shared/Pagination.vue'
-import ClassesForm from '../components/features/classes-group/ClassesForm.vue'
 import DeleteAlertModal from '../components/shared/DeleteAlertModal.vue'
-import LoadingSpinner from '../components/shared/LoadingSpinner.vue'
 
 const classesStore = useClassesStore()
 
@@ -15,13 +14,6 @@ const selectedClass = ref(null)
 onMounted(() => {
   classesStore.getClasses()
 })
-
-watch(
-  () => classesStore.currentPage,
-  () => {
-    classesStore.getClasses()
-  }
-)
 
 const toggleDeleteModal = classItem => {
   selectedClass.value = classItem
@@ -41,29 +33,15 @@ const onPageChange = async page => {
 </script>
 
 <template>
-  <section class="size-full flex flex-col justify-between md:p-20">
-    <div v-if="classesStore.isLoading">
-      <LoadingSpinner />
-    </div>
-    <div v-else>
-      <ClassesTable
-        :classes="classesStore.classes"
-        @open-form-modal="toggleFormModal"
-        @open-delete-modal="toggleDeleteModal"
-      />
-      <Pagination
-        :currentPage="classesStore.currentPage"
-        :totalPages="classesStore.totalPages"
-        :lastPage="classesStore.lastPage"
-        @page-change="onPageChange"
-      />
-    </div>
-    <ClassesForm
-      :isOpen="isFormModalOpen"
-      :selectedClass="selectedClass"
-      @handle-save="onSave"
-      @cancel-save="toggleFormModal"
+  <Section :isLoading="classesStore.isLoading">
+    <ClassesTable :classes="classesStore.classes" @open-delete-modal="toggleDeleteModal" />
+    <Pagination
+      :currentPage="classesStore.currentPage"
+      :totalPages="classesStore.totalPages"
+      :lastPage="classesStore.lastPage"
+      @page-change="onPageChange"
     />
+
     <DeleteAlertModal
       :isOpen="isDeleteModalOpen"
       :selectedClass="selectedClass"
@@ -74,5 +52,5 @@ const onPageChange = async page => {
         <span class="font-semibold">{{ selectedClass.class_name }} nevű osztályt!</span>?
       </p></DeleteAlertModal
     >
-  </section>
+  </Section>
 </template>

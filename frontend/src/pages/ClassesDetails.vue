@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStudentsStore } from '../stores/students'
+import Table from '../components/shared/Table.vue'
+import DetailsCard from '../components/shared/DetailsCard.vue'
 import Pagination from '../components/shared/Pagination.vue'
 import Button from '../components/shared/Button.vue'
 
@@ -48,42 +50,27 @@ const onPageChange = async page => {
         Vissza
       </Button>
     </div>
-
-    <div v-if="classData" class="md:w-1/3 bg-action text-primary p-6 rounded-lg shadow-md mb-6">
-      <h1 class="text-2xl mb-4">
-        <strong>{{ classData.class_name }}</strong> osztály
-      </h1>
-      <p class="mb-2"><strong>Osztályterem:</strong> {{ classData.classroom }}</p>
-      <p class="mb-2"><strong>Osztályfőnök:</strong> {{ classData.teacher }}</p>
-      <p class="mb-2"><strong>Osztályfőnök email cím:</strong> {{ classData.teacher_email }}</p>
-      <p class="mb-2">
-        <strong>Létrehozva:</strong>
-        {{ new Date(classData.created_at).toLocaleDateString() }}
-      </p>
-    </div>
-
-    <table class="w-full">
-      <thead>
-        <tr class="text-center">
-          <th>Tanuló</th>
-          <th>Osztály</th>
-          <th>Telefon</th>
-          <th>Cím</th>
-          <th>Email</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="studentItem in studentsStore.students" :key="studentItem.id" class="text-center">
-          <td>{{ studentItem.student_name }}</td>
-          <td>{{ studentItem.classes[0].class_name }}</td>
-          <td>{{ studentItem.student_phone }}</td>
-          <td>{{ studentItem.student_address }}</td>
-          <td>{{ studentItem.student_email }}</td>
-        </tr>
-      </tbody>
-    </table>
-
+    <DetailsCard
+      v-if="classData"
+      :data="classData"
+      :title="classData.class_name"
+      :fields="[
+        { name: 'Osztályterem', key: 'classroom' },
+        { name: 'Osztályfőnök', key: 'teacher' },
+        { name: 'Osztályfőnök email cím', key: 'teacher_email' },
+      ]"
+    />
+    <Table
+      :columns="[
+        { name: 'Tanuló', key: 'student_name' },
+        { name: 'Osztály', key: 'classes[0].class_name', mobileVisible: false },
+        { name: 'Telefon', key: 'student_phone' },
+        { name: 'Cím', key: 'student_address', mobileVisible: false },
+        { name: 'Email', key: 'student_email', mobileVisible: false },
+      ]"
+      :data="studentsStore.students"
+      :actions="[]"
+    />
     <Pagination
       :currentPage="studentsStore.currentPage"
       :totalPages="studentsStore.totalPages"

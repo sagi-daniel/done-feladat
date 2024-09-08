@@ -94,11 +94,6 @@ export const useStudentsStore = defineStore('students', {
       }
     },
 
-    async changeGradesPage(page) {
-      this.gradesCurrentPage = page
-      await this.getStudentById(this.studentDetails.id)
-    },
-
     async addStudent(studentData) {
       this.isLoading = true
       this.error = null

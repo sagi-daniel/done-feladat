@@ -43,7 +43,7 @@ const roundedValue = key => {
         >
           {{ getValue(row, column) }}
         </td>
-        <td v-if="actions.length > 0" className="flex justify-center items-center space-x-2">
+        <td v-if="actions.length > 0" className="flex justify-center items-center space-x-4">
           <Button
             v-for="(action, index) in actions"
             :key="index"

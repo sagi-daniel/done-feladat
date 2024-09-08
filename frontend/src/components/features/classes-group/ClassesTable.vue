@@ -20,7 +20,7 @@ const formHandler = classItem => {
 }
 
 const detailsHandler = classItem => {
-  router.push(`/classes/${classItem}`)
+  router.push(`/classes/${classItem.id}`)
 }
 
 const deleteHandler = classItem => {

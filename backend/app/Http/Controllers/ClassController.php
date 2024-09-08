@@ -34,6 +34,17 @@ class ClassController extends Controller
         ], 200);
     }
 
+    public function allclass()
+    {
+        $classes = ClassModel::all();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $classes,
+        ], 200);
+    }
+
+
     /**
      * Store a newly created resource in storage.
      */

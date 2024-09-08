@@ -19,11 +19,9 @@ class StudentController extends Controller
     {
         $query = StudentModel::with('classes');
 
-        // Decode URL encoded characters
         $name = urldecode($request->input('name', ''));
         $class = urldecode($request->input('class', ''));
 
-        // Normalize special characters
         $name = Str::ascii($name);
         $class = Str::ascii($class);
 
@@ -41,13 +39,10 @@ class StudentController extends Controller
             });
         }
 
-        $perPage = (int) $request->input('per_page', 10);
-        $students = $query->get();
-
         $minAverage = (float) $request->input('min_average', 0);
         $maxAverage = (float) $request->input('max_average', INF);
 
-        $students = $students->map(function ($student) {
+        $students = $query->get()->map(function ($student) {
             $averageGradesBySubject = $student->grades()
                 ->selectRaw('subject_id, AVG(grade) as average_grade')
                 ->groupBy('subject_id')
@@ -62,21 +57,44 @@ class StudentController extends Controller
                 ($maxAverage === null || $student->grades_avg <= $maxAverage);
         });
 
+        $perPage = (int) $request->input('per_page', 10);
         $currentPage = (int) $request->input('page', 1);
-        $students = $students->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
         $totalItems = $students->count();
         $lastPage = (int) ceil($totalItems / $perPage);
 
+        $students = $students->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
         return response()->json([
             'status' => 'success',
-            'data' => $students->values(),
+            'data' => $students,
             'totalItems' => $totalItems,
             'currentPage' => $currentPage,
             'lastPage' => $lastPage,
             'perPage' => $perPage
         ]);
     }
+
+
+    public function allstudents($id)
+    {
+        $query = StudentModel::with('classes');
+
+        if ($id) {
+            $query->whereHas('classes', function ($q) use ($id) {
+                $q->where('class_id', $id);
+            });
+        }
+
+        $students = $query->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $students,
+        ]);
+    }
+
+
 
     /**
      * Store a newly created resource in storage.

@@ -24,8 +24,8 @@ const deleteHandler = gradeItem => {
   <Table
     :columns="[
       { name: 'Tanuló', key: 'student.student_name' },
-      { name: 'Osztály', key: 'student.classes[0].class_name', mobileVisible: false },
       { name: 'Tantárgy', key: 'subject.subject_name' },
+      { name: 'Osztály', key: 'student.classes[0].class_name', mobileVisible: false },
       { name: 'Érdemjegy', key: 'grade' },
       { name: 'Dátum', key: 'date', mobileVisible: false },
     ]"

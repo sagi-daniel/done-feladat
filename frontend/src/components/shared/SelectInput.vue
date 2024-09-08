@@ -36,7 +36,7 @@ const hasSelectedValue = computed(() => {
 </script>
 
 <template>
-  <div class="relative mb-3">
+  <div class="relative w-56 text-primary">
     <select
       :value="hasSelectedValue ? modelValue : ''"
       :required="required"
@@ -54,17 +54,3 @@ const hasSelectedValue = computed(() => {
     </span>
   </div>
 </template>
-
-<style scoped>
-/* Adjust the position of the icon */
-.select-container {
-  position: relative;
-}
-.select-container .fa-chevron-down {
-  position: absolute;
-  right: 8px; /* Adjust this value to fit your design */
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none; /* Prevent icon from capturing clicks */
-}
-</style>

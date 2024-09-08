@@ -1,6 +1,11 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useGradesStore } from '../stores/grades'
+import { SUBJECTS } from '../utils/constants'
+import { removeAccents } from '../utils/helpers'
+import Button from '../components/shared/Button.vue'
+import Input from '../components/shared/Input.vue'
+import SelectInput from '../components/shared/SelectInput.vue'
 import Section from '../components/shared/Section.vue'
 import GradesTable from '../components/features/grades-group/GradesTable.vue'
 import Pagination from '../components/shared/Pagination.vue'
@@ -17,6 +22,28 @@ onMounted(() => {
   gradesStore.getGrades()
 })
 
+const filters = ref({
+  name: '',
+  subject: '',
+  class: '',
+  min_grade: 1,
+  max_grade: 5,
+})
+
+const applyFilters = async () => {
+  const queryParams = {
+    name: filters.value.name ? encodeURIComponent(removeAccents(filters.value.name)) : undefined,
+    subject: filters.value.subject ? encodeURIComponent(removeAccents(filters.value.subject)) : undefined,
+    class: filters.value.class ? encodeURIComponent(removeAccents(filters.value.class)) : undefined,
+    min_grade: filters.value.min_grade ? Number(filters.value.min_grade) : undefined,
+    max_grade: filters.value.max_grade ? Number(filters.value.max_grade) : undefined,
+  }
+
+  const cleanQueryParams = Object.fromEntries(Object.entries(queryParams).filter(([_, v]) => v !== undefined))
+
+  await gradesStore.getGrades(cleanQueryParams)
+}
+
 const toggleDeleteModal = gradeItem => {
   selectedGrade.value = gradeItem
   isDeleteModalOpen.value = !isDeleteModalOpen.value
@@ -31,6 +58,14 @@ const onDelete = async () => {
   if (selectedGrade.value) {
     await gradesStore.removeGrade(selectedGrade.value.id)
     isDeleteModalOpen.value = false
+    filters.value = {
+      name: '',
+      subject: '',
+      class: '',
+      min_grade: 1,
+      max_grade: 5,
+    }
+    await gradesStore.getGrades()
   }
 }
 
@@ -45,12 +80,37 @@ const onSave = async gradeItem => {
 }
 
 const onPageChange = async page => {
-  await gradesStore.changePage(page)
+  await gradesStore.changePage(page, {
+    name: filters.value.name ? encodeURIComponent(removeAccents(filters.value.name)) : undefined,
+    subject: filters.value.subject ? encodeURIComponent(removeAccents(filters.value.subject)) : undefined,
+    class: filters.value.class ? encodeURIComponent(removeAccents(filters.value.class)) : undefined,
+    min_grade: filters.value.min_grade ? Number(filters.value.min_grade) : undefined,
+    max_grade: filters.value.max_grade ? Number(filters.value.max_grade) : undefined,
+  })
 }
 </script>
 
 <template>
   <Section :isLoading="gradesStore.isLoading">
+    <div class="w-full flex justify-between items-center gap-4 py-5">
+      <Input type="text" v-model="filters.name" placeholder="Név" />
+      <SelectInput
+        label="Érdemjegy"
+        :options="SUBJECTS"
+        v-model="filters.subject"
+        :required="true"
+        placeholder="Válassza ki a tantárgyat!"
+      />
+      <Input type="text" v-model="filters.class" placeholder="Osztály" />
+      <div class="flex justify-center items-center gap-4">
+        <Input type="number" v-model="filters.min_grade" :min="1" :max="5" placeholder="min átlag" />
+        <font-awesome-icon icon="minus" />
+        <Input type="number" v-model="filters.max_grade" :min="1" :max="5" placeholder="max átlag" />
+      </div>
+
+      <Button :onClick="applyFilters" className="btn-add">Szűrés</Button>
+    </div>
+
     <GradesTable :grades="gradesStore.grades" @navigate-form="toggleFormModal" @open-delete-modal="toggleDeleteModal" />
     <Pagination
       :currentPage="gradesStore.currentPage"
@@ -70,14 +130,13 @@ const onPageChange = async page => {
       @handle-delete="onDelete"
       @cancel-delete="toggleDeleteModal"
     >
-      <p v-if="selectedGrade && selectedGrade.subject" class="text-lg text-center">
+      <p class="text-lg text-center">
         Biztosan törölni szeretné a <br />
         <span class="font-semibold">
           {{ `${selectedGrade.subject.subject_name} ${selectedGrade.grade}` }} érdemjegyet!
         </span>
         ?
       </p>
-      <p v-else class="text-lg text-center">Nincs kiválasztott érdemjegy!</p>
     </DeleteAlertModal>
   </Section>
 </template>

@@ -12,30 +12,40 @@ const props = defineProps({
 
 const router = useRouter()
 
-const emits = defineEmits(['open-delete-modal'])
+const emits = defineEmits(['open-delete-modal', 'open-form-modal', 'open-details-modal'])
 
 const deleteHandler = studentItem => {
-  emits('open-delete-modal', studentItem)
+  if (studentItem && studentItem.id) {
+    emits('open-delete-modal', studentItem)
+  } else {
+    console.error('Invalid studentItem provided for deleteHandler', studentItem)
+  }
 }
 
 const createHandler = studentItem => {
-  router.push(`/classes/create/${studentItem.id}`)
+  if (studentItem && studentItem.id) {
+    router.push(`/classes/create/${studentItem.id}`)
+  } else {
+    console.error('Invalid studentItem provided for createHandler', studentItem)
+  }
 }
 
 const detailsHandler = studentItem => {
-  router.push(`/students/${studentItem.id}`)
+  if (studentItem && studentItem.id) {
+    router.push(`/students/${studentItem.id}`)
+  } else {
+    console.error('Invalid studentItem provided for detailsHandler', studentItem)
+  }
 }
 </script>
 
 <template>
-  <!-- TODO filtering -->
-
   <Table
     :columns="[
       { name: 'Tanuló', key: 'student_name' },
+      { name: 'Telefon', key: 'student_phone' },
       { name: 'Osztály', key: 'classes[0].class_name' },
       { name: 'Tanulmányi átlag', key: 'grades_avg', rounding: true, mobileVisible: false },
-      { name: 'Telefon', key: 'student_phone' },
     ]"
     :data="students"
     :actions="[

@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 
 const props = defineProps({

@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch } from 'vue'
 import CloseIcon from './CloseIcon.vue'
 
 const props = defineProps({

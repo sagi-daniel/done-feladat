@@ -1,6 +1,5 @@
 <script setup>
 import { getValueDetailsCardComponent } from '../../utils/helpers'
-import { computed } from 'vue'
 
 const props = defineProps({
   title: {
@@ -17,7 +16,6 @@ const props = defineProps({
   },
 })
 
-// Use computed to ensure reactivity
 const getValue = key => {
   return getValueDetailsCardComponent(key, props.data)
 }
@@ -36,7 +34,6 @@ const roundedValue = key => {
     <div v-for="(field, index) in fields" :key="index" class="mb-2">
       <p>
         <strong>{{ field.name }}:</strong>
-        <!-- Ellenőrizzük, ha rounding true, akkor lekerekítjük az értéket -->
         <span v-if="field.rounding">
           {{ roundedValue(field.key) }}
         </span>

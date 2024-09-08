@@ -29,7 +29,7 @@ const roundedValue = key => {
 <template>
   <div v-if="data" class="md:w-1/2 bg-secondary text-primary p-6 rounded-lg shadow-md mb-6">
     <h1 class="text-2xl mb-4">
-      <strong>{{ title }}</strong> osztály
+      <strong>{{ title }}</strong>
     </h1>
     <div v-for="(field, index) in fields" :key="index" class="mb-2">
       <p>

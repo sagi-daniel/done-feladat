@@ -2,54 +2,44 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStudentsStore } from '../stores/students'
+import Section from '../components/shared/Section.vue'
 import Table from '../components/shared/Table.vue'
 import DetailsCard from '../components/shared/DetailsCard.vue'
 import Pagination from '../components/shared/Pagination.vue'
-import Button from '../components/shared/Button.vue'
+import NavBackButton from '../components/shared/NavBackButton.vue'
 
 const router = useRouter()
 const route = useRoute()
 const studentsStore = useStudentsStore()
 
-const classId = ref('')
 const classData = ref(null)
 
-const fetchStudents = async () => {
-  if (classId.value.trim()) {
-    await studentsStore.getStudentsByClassId(classId.value)
-    if (studentsStore.students.length > 0) {
-      classData.value = studentsStore.students[0].classes[0]
-    }
-  }
+const getStudents = async () => {
+  await studentsStore.getStudentsByClassId(route.params.id)
+  classData.value = studentsStore.students[0].classes[0]
 }
 
 watch(
   () => route.params.id,
   async newId => {
-    classId.value = newId
-    await fetchStudents()
+    await getStudents(newId)
   },
   { immediate: true }
 )
 
-const back = () => {
+const handleBack = () => {
   router.push('/classes')
 }
 
 const onPageChange = async page => {
   studentsStore.currentPage = page
-  await fetchStudents()
+  await getStudents()
 }
 </script>
 
 <template>
-  <section class="size-full flex flex-col justify-between md:p-20">
-    <div class="flex items-start mb-6">
-      <Button className="btn-icon-square" @click="back">
-        <font-awesome-icon icon="chevron-left" />
-        Vissza
-      </Button>
-    </div>
+  <Section :isLoading="studentsStore.isLoading">
+    <NavBackButton @back="handleBack" />
     <DetailsCard
       v-if="classData"
       :data="classData"
@@ -77,5 +67,5 @@ const onPageChange = async page => {
       :lastPage="studentsStore.lastPage"
       @page-change="onPageChange"
     />
-  </section>
+  </Section>
 </template>

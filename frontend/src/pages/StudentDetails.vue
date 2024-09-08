@@ -7,7 +7,7 @@ import Section from '../components/shared/Section.vue'
 import Table from '../components/shared/Table.vue'
 import DetailsCard from '../components/shared/DetailsCard.vue'
 import Pagination from '../components/shared/Pagination.vue'
-import Button from '../components/shared/Button.vue'
+import NavBackButton from '../components/shared/NavBackButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -44,20 +44,14 @@ const onPageChange = async page => {
   await studentGradesStore.changePage(page)
 }
 
-const back = () => {
+const handleBack = () => {
   router.push('/students')
 }
 </script>
 
 <template>
   <Section :isLoading="studentsStore.isLoading">
-    <div class="flex items-start mb-6">
-      <Button className="btn-icon-square" @click="back">
-        <font-awesome-icon icon="chevron-left" />
-        Vissza
-      </Button>
-    </div>
-
+    <NavBackButton @back="handleBack" />
     <div class="flex space-x-4">
       <DetailsCard
         v-if="studentData"

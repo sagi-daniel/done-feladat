@@ -8,6 +8,7 @@ use App\Models\StudentModel;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
@@ -18,45 +19,64 @@ class StudentController extends Controller
     {
         $query = StudentModel::with('classes');
 
-        if ($request->has('name')) {
-            $query->where('student_name', 'like', '%' . $request->input('name') . '%');
+        // Decode URL encoded characters
+        $name = urldecode($request->input('name', ''));
+        $class = urldecode($request->input('class', ''));
+
+        // Normalize special characters
+        $name = Str::ascii($name);
+        $class = Str::ascii($class);
+
+        if (!empty($name)) {
+            $query->where('student_name', 'like', '%' . $name . '%');
         }
 
         if ($request->has('phone')) {
             $query->where('student_phone', 'like', '%' . $request->input('phone') . '%');
         }
 
-        if ($request->has('class')) {
-            $query->where('class_id', $request->input('class'));
+        if (!empty($class)) {
+            $query->whereHas('classes', function ($q) use ($class) {
+                $q->where('class_name', 'like', '%' . $class . '%');
+            });
         }
 
-        $perPage = $request->input('per_page', 10);
-        $students = $query->paginate($perPage);
+        $perPage = (int) $request->input('per_page', 10);
+        $students = $query->get();
 
-        $studentsArray = $students->items();
+        $minAverage = (float) $request->input('min_average', 0);
+        $maxAverage = (float) $request->input('max_average', INF);
 
-        foreach ($studentsArray as $student) {
-
+        $students = $students->map(function ($student) {
             $averageGradesBySubject = $student->grades()
                 ->selectRaw('subject_id, AVG(grade) as average_grade')
                 ->groupBy('subject_id')
                 ->get();
 
             $totalAverageGrade = $averageGradesBySubject->avg('average_grade');
-
             $student->grades_avg = $totalAverageGrade;
-        }
+
+            return $student;
+        })->filter(function ($student) use ($minAverage, $maxAverage) {
+            return ($minAverage === null || $student->grades_avg >= $minAverage) &&
+                ($maxAverage === null || $student->grades_avg <= $maxAverage);
+        });
+
+        $currentPage = (int) $request->input('page', 1);
+        $students = $students->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $totalItems = $students->count();
+        $lastPage = (int) ceil($totalItems / $perPage);
 
         return response()->json([
             'status' => 'success',
-            'data' => $studentsArray,
-            'totalItems' => $students->total(),
-            'currentPage' => $students->currentPage(),
-            'lastPage' => $students->lastPage(),
-            'perPage' => $students->perPage(),
-        ], 200);
+            'data' => $students->values(),
+            'totalItems' => $totalItems,
+            'currentPage' => $currentPage,
+            'lastPage' => $lastPage,
+            'perPage' => $perPage
+        ]);
     }
-
 
     /**
      * Store a newly created resource in storage.

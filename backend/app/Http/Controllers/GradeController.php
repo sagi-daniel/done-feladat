@@ -7,7 +7,7 @@ use App\Models\GradeModel;;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class GradeController extends Controller
 {
@@ -16,44 +16,43 @@ class GradeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = GradeModel::with('subject', 'student.classes',);
+        $query = GradeModel::with('subject', 'student.classes');
 
-        if ($request->has('student_name')) {
-            $query->join('students', 'grades.student_id', '=', 'students.id')
-                ->where('students.student_name', 'like', '%' . $request->input('student_name') . '%')
-                ->select('grades.*', 'students.student_name');
+        $studentName = urldecode($request->input('name', ''));
+        $subjectName = urldecode($request->input('subject', ''));
+        $className = urldecode($request->input('class', ''));
+
+        $studentName = Str::ascii($studentName);
+        $subjectName = Str::ascii($subjectName);
+        $className = Str::ascii($className);
+
+        if (!empty($studentName)) {
+            $query->whereHas('student', function ($q) use ($studentName) {
+                $q->where('student_name', 'like', '%' . $studentName . '%');
+            });
         }
 
-        if ($request->has('subject_name')) {
-            $query->join('subjects', 'grades.subject_id', '=', 'subjects.id')
-                ->where('subjects.subject_name', 'like', '%' . $request->input('subject_name') . '%')
-                ->select('grades.*', 'subjects.subject_name');
+        if (!empty($subjectName)) {
+            $query->whereHas('subject', function ($q) use ($subjectName) {
+                $q->where('subject_name', 'like', '%' . $subjectName . '%');
+            });
         }
 
-        if ($request->has('class_name')) {
-            $query->join('classes', 'grades.class_id', '=', 'classes.id')  // Kapcsolat az osztályhoz
-                ->where('classes.class_name', 'like', '%' . $request->input('class_name') . '%')
-                ->select('grades.*', 'classes.class_name');
+        if (!empty($className)) {
+            $query->whereHas('student.classes', function ($q) use ($className) {
+                $q->where('class_name', 'like', '%' . $className . '%');
+            });
         }
 
-        // Egyéb feltételek
-        if ($request->has('grade')) {
-            $query->where('grade', $request->input('grade'));
+        $minGrade = (float) $request->input('min_grade', 0);
+        $maxGrade = (float) $request->input('max_grade', INF);
+
+
+        if ($minGrade || $maxGrade !== INF) {
+            $query->whereBetween('grade', [$minGrade, $maxGrade]);
         }
 
-        if ($request->has('date_from') && $request->has('date_to')) {
-            $query->whereBetween('date', [
-                $request->input('date_from'),
-                $request->input('date_to')
-            ]);
-        } elseif ($request->has('date_from')) {
-            $query->where('date', '>=', $request->input('date_from'));
-        } elseif ($request->has('date_to')) {
-            $query->where('date', '<=', $request->input('date_to'));
-        }
-
-        $perPage = $request->input('per_page', 10);
-
+        $perPage = (int) $request->input('per_page', 10);
         $grades = $query->paginate($perPage);
 
         return response()->json([
@@ -65,6 +64,7 @@ class GradeController extends Controller
             'perPage' => $grades->perPage(),
         ], 200);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -101,7 +101,6 @@ class GradeController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Error storing grade: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while creating the grade.',
@@ -168,7 +167,6 @@ class GradeController extends Controller
                 'message' => 'Grade not found.',
             ], 404);
         } catch (\Exception $e) {
-            Log::error('Error updating grade: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while updating the grade.',
@@ -217,7 +215,6 @@ class GradeController extends Controller
                 'perPage' => $grades->perPage(),
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error retrieving grades for student: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while retrieving grades.',
@@ -247,7 +244,6 @@ class GradeController extends Controller
                 'message' => 'Grade not found.',
             ], 404);
         } catch (\Exception $e) {
-            Log::error('Error deleting grade: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while deleting the grade.',

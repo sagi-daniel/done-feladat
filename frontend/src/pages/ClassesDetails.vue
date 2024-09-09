@@ -16,13 +16,17 @@ const classData = ref(null)
 
 const getStudents = async () => {
   await studentsStore.getStudentsByClassId(route.params.id)
-  classData.value = studentsStore.students[0].classes[0]
+  if (studentsStore.students.length > 0 && studentsStore.students[0].classes) {
+    classData.value = studentsStore.students[0].classes[0]
+  } else {
+    classData.value = null
+  }
 }
 
 watch(
   () => route.params.id,
-  async newId => {
-    await getStudents(newId)
+  async () => {
+    await getStudents()
   },
   { immediate: true }
 )

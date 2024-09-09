@@ -1,6 +1,4 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
-
 const props = defineProps({
   type: {
     type: String,
@@ -9,7 +7,7 @@ const props = defineProps({
   },
   label: {
     type: String,
-    required: true,
+    required: false,
   },
   placeholder: {
     type: String,
@@ -30,6 +28,14 @@ const props = defineProps({
   className: {
     type: String,
     default: 'border rounded px-3 py-2 w-full',
+  },
+  min: {
+    type: Number,
+    require: false,
+  },
+  max: {
+    type: Number,
+    require: false,
   },
 })
 

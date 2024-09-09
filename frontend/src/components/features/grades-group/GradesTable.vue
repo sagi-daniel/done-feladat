@@ -24,16 +24,13 @@ const deleteHandler = gradeItem => {
   <Table
     :columns="[
       { name: 'Tanuló', key: 'student.student_name' },
-      { name: 'Osztály', key: 'student.classes[0].class_name', mobileVisible: false },
       { name: 'Tantárgy', key: 'subject.subject_name' },
+      { name: 'Osztály', key: 'student.classes[0].class_name', mobileVisible: false },
       { name: 'Érdemjegy', key: 'grade' },
       { name: 'Dátum', key: 'date', mobileVisible: false },
     ]"
     :data="grades"
-    :actions="[
-      { icon: 'pencil', handler: formHandler },
-      { icon: 'trash', handler: deleteHandler },
-    ]"
+    :actions="[{ icon: 'trash', handler: deleteHandler }]"
     :addHandler="formHandler"
   />
 </template>

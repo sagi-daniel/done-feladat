@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps, defineEmits, ref, watch } from 'vue'
 import CloseIcon from './CloseIcon.vue'
 
 const props = defineProps({
@@ -30,9 +29,9 @@ const handleModalClick = event => {
     class="fixed inset-0 bg-primary bg-opacity-90 flex items-center justify-center z-50"
     @click="handleBackdropClick"
   >
-    <div class="bg-secondary text-primary p-6 rounded-lg shadow-lg relative max-w-sm w-full" @click="handleModalClick">
+    <div class="bg-secondary text-primary p-2 rounded-lg shadow-lg relative max-w-sm w-full" @click="handleModalClick">
       <CloseIcon @click="handleBackdropClick" class="absolute top-2 right-2 cursor-pointer" />
-      <div class="flex flex-col justify-center items-center px-10 py-2">
+      <div class="flex flex-col justify-center items-center px-5 py-2">
         <slot></slot>
       </div>
     </div>

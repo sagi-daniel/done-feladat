@@ -20,9 +20,9 @@ const selectedStudent = ref(null)
 const fetchClass = async id => {
   if (id) {
     await classesStore.getClassById(id)
-    currentClass.value = classesStore.class // Assuming `class` is the name of the class data in the store
+    currentClass.value = classesStore.classDetails
   } else {
-    currentClass.value = {} // Initialize with empty object for new class
+    currentClass.value = {}
   }
 }
 
@@ -30,7 +30,6 @@ onMounted(() => {
   fetchClass(classId.value)
 })
 
-// Watch for changes in the classId and fetch the class data accordingly
 watch(classId, newId => {
   fetchClass(newId)
 })
@@ -49,13 +48,9 @@ const toggleFormModal = classItem => {
 
 const onSave = async () => {
   if (currentClass.value.id) {
-    // Update existing class
     console.log('update', currentClass.value)
-    // Perform update operation here
   } else {
-    // Create new class
     console.log('create', currentClass.value)
-    // Perform create operation here
   }
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import Modal from '../../shared/Modal.vue'
 import Button from '../../shared/Button.vue'
 import Input from '../../shared/Input.vue'
@@ -17,26 +17,26 @@ const props = defineProps({
 
 const studentForm = ref({
   student_name: '',
-  class: 0,
   student_phone: '',
+  student_email: '',
   student_address: '',
 })
 
 watch(
   () => props.selectedStudent,
-  newClass => {
-    if (newClass && Object.keys(newClass).length > 0) {
+  newStudent => {
+    if (newStudent && Object.keys(newStudent).length > 0) {
       studentForm.value = {
-        student_name: newClass.student_name || '',
-        class_id: newClass.class_id || 0,
-        student_phone: newClass.student_phone || '',
-        student_address: newClass.student_address || '',
+        student_name: newStudent.student_name || '',
+        student_phone: newStudent.student_phone || '',
+        student_email: newStudent.student_email || '',
+        student_address: newStudent.student_address || '',
       }
     } else {
       studentForm.value = {
         student_name: '',
-        class_id: 0,
         student_phone: '',
+        student_email: '',
         student_address: '',
       }
     }
@@ -53,15 +53,6 @@ const onSave = () => {
 const onClose = () => {
   emits('cancel-save')
 }
-
-const isFormValid = computed(() => {
-  return (
-    studentForm.value.student_name.trim() !== '' &&
-    studentForm.value.class &&
-    studentForm.value.student_phone.trim() !== '' &&
-    studentForm.value.student_address.trim() !== ''
-  )
-})
 </script>
 
 <template>
@@ -75,14 +66,6 @@ const isFormValid = computed(() => {
         :required="true"
         placeholder="Adja meg a tanuló nevét..."
       />
-      <!-- TODO itt le kell kérni a létező osztályokat -->
-      <Input
-        type="number"
-        label="Osztály"
-        v-model="studentForm.class"
-        :required="true"
-        placeholder="Adja meg az osztályt."
-      />
       <Input
         type="text"
         label="Telefon"
@@ -91,13 +74,20 @@ const isFormValid = computed(() => {
         placeholder="Adja meg a telefonszámát"
       />
       <Input
+        type="email"
+        label="email"
+        v-model="studentForm.student_email"
+        :required="true"
+        placeholder="Adja meg az email címét"
+      />
+      <Input
         type="text"
         label="Lakcím"
         v-model="studentForm.student_address"
         :required="true"
         placeholder="Adja meg a lakcímét..."
       />
-      <Button type="submit" className="btn-add" :disabled="!isFormValid"> Mentés </Button>
+      <Button type="submit" className="btn-add"> Mentés </Button>
     </form>
   </Modal>
 </template>

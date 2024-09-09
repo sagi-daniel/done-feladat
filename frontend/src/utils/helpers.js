@@ -8,6 +8,10 @@ export const debounce = (fn, delay) => {
 
 export const now = () => new Date().toISOString().split('T')[0]
 
+export const removeAccents = str => {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
 export const getValue = (item, column) => {
   if (!item || !column || !column.key) return 'N/A'
 

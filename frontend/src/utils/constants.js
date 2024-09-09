@@ -13,11 +13,11 @@ export const GRADES = [
 ]
 
 export const SUBJECTS = [
-  { name: 'Matematika', value: 'Matematika' },
-  { name: 'Irodalom', value: 'Irodalom' },
-  { name: 'Fizika', value: 'Fizika' },
-  { name: 'Kémia', value: 'Kémia' },
-  { name: 'Történelem', value: 'Történelem' },
+  { name: 'Matematika', value: 1 },
+  { name: 'Irodalom', value: 2 },
+  { name: 'Fizika', value: 3 },
+  { name: 'Kémia', value: 4 },
+  { name: 'Történelem', value: 5 },
 ]
 
 export const BASE_URL = 'http://127.0.0.1:8000/api'

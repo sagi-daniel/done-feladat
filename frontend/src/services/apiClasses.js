@@ -9,6 +9,15 @@ export const fetchClasses = async (queryParams = {}) => {
   }
 }
 
+export const fetchAllClasses = async () => {
+  try {
+    const response = await apiClient.get('/classes/all')
+    return response.data
+  } catch (error) {
+    throw handleApiError(error)
+  }
+}
+
 export const createClass = async classData => {
   try {
     const response = await apiClient.post('/classes', classData)

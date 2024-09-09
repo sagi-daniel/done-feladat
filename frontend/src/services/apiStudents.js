@@ -9,6 +9,15 @@ export const fetchStudents = async (queryParams = {}) => {
   }
 }
 
+export const fetchStudentsAll = async id => {
+  try {
+    const response = await apiClient.get(`/students/${id}/all`)
+    return response.data
+  } catch (error) {
+    throw handleApiError(error)
+  }
+}
+
 export const createStudent = async studentData => {
   try {
     const response = await apiClient.post('/students', studentData)

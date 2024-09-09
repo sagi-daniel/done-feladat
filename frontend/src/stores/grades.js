@@ -4,13 +4,13 @@ import { fetchGrades, createGrade, fetchGradeById, updateGradeById, deleteGradeB
 export const useGradesStore = defineStore('grades', {
   state: () => ({
     grades: [],
+    gradeDetails: null,
     totalItems: 0,
     currentPage: 1,
     lastPage: 1,
     perPage: 10,
     isLoading: false,
     error: null,
-    gradeDetails: null,
   }),
 
   actions: {
@@ -103,6 +103,5 @@ export const useGradesStore = defineStore('grades', {
 
   getters: {
     totalPages: state => state.lastPage,
-    gradeCount: state => state.grades.length,
   },
 })

@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref, computed } from 'vue'
+import {computed } from 'vue'
 import { debounce } from '../../utils/helpers'
 
 const props = defineProps({

@@ -1,9 +1,17 @@
 import { defineStore } from 'pinia'
-import { fetchClasses, createClass, fetchClassById, updateClassById, deleteClassById } from '../services/apiClasses'
+import {
+  fetchClasses,
+  fetchAllClasses,
+  createClass,
+  fetchClassById,
+  updateClassById,
+  deleteClassById,
+} from '../services/apiClasses'
 
 export const useClassesStore = defineStore('classes', {
   state: () => ({
     classes: [],
+    allClasses: [],
     totalItems: 0,
     currentPage: 1,
     lastPage: 1,
@@ -32,6 +40,20 @@ export const useClassesStore = defineStore('classes', {
         this.currentPage = response.currentPage
         this.lastPage = response.lastPage
         this.perPage = response.perPage
+      } catch (error) {
+        this.error = error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async getAllClasses() {
+      this.isLoading = true
+      this.error = null
+
+      try {
+        const response = await fetchAllClasses()
+        this.allClasses = response.data
       } catch (error) {
         this.error = error
       } finally {

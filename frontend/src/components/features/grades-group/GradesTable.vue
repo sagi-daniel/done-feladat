@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 import Table from '../../shared/Table.vue'
 
 const props = defineProps({

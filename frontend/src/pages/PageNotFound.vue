@@ -3,7 +3,6 @@ import { useRouter } from 'vue-router'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-// Vue Router használata a navigációhoz
 const router = useRouter()
 
 function goToInbox() {

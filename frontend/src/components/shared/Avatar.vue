@@ -1,9 +1,3 @@
-<template>
-  <span :class="avatarClasses">
-    {{ userIconWords }}
-  </span>
-</template>
-
 <script setup>
 import { computed } from 'vue'
 
@@ -30,3 +24,9 @@ const avatarClasses = computed(() =>
   )
 )
 </script>
+
+<template>
+  <span :class="avatarClasses">
+    {{ userIconWords }}
+  </span>
+</template>

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import {
   fetchStudents,
+  fetchStudentsAll,
   createStudent,
   fetchStudentById,
   updateStudentById,
@@ -10,6 +11,7 @@ import {
 export const useStudentsStore = defineStore('students', {
   state: () => ({
     students: [],
+    allStudents: [],
     studentDetails: null,
     totalItems: 0,
     currentPage: 1,
@@ -87,6 +89,20 @@ export const useStudentsStore = defineStore('students', {
         this.currentPage = response.currentPage
         this.lastPage = response.lastPage
         this.perPage = response.perPage
+      } catch (error) {
+        this.error = error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async getStudentsByClassIdAll(classId) {
+      this.isLoading = true
+      this.error = null
+
+      try {
+        const response = await fetchStudentsAll(classId)
+        this.allStudents = response.data
       } catch (error) {
         this.error = error
       } finally {

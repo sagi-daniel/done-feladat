@@ -1,6 +1,4 @@
 <script setup>
-import { computed } from 'vue'
-
 const props = defineProps({
   options: {
     type: Array,
@@ -11,7 +9,7 @@ const props = defineProps({
     default: '',
   },
   modelValue: {
-    type: String,
+    type: [String, Number],
     default: '',
   },
   required: {
@@ -24,27 +22,23 @@ const props = defineProps({
   },
   className: {
     type: String,
-    default: 'border rounded px-3 py-2 w-full pr-8', // Added padding-right for icon
+    default: 'border rounded px-3 py-2 w-full pr-8',
   },
 })
 
 const emit = defineEmits(['update:modelValue'])
-
-const hasSelectedValue = computed(() => {
-  return props.options.some(option => option.value === props.modelValue)
-})
 </script>
 
 <template>
-  <div class="relative w-56 text-primary">
+  <div class="relative w-full text-primary">
     <select
-      :value="hasSelectedValue ? modelValue : ''"
+      :value="modelValue"
       :required="required"
       :disabled="disabled"
       @change="$emit('update:modelValue', $event.target.value)"
       :class="className"
     >
-      <option :value="''" disabled :selected="!hasSelectedValue">{{ placeholder }}</option>
+      <option :value="''" disabled>{{ placeholder }}</option>
       <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.name }}
       </option>

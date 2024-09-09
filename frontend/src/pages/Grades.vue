@@ -54,6 +54,19 @@ const toggleFormModal = gradeItem => {
   isFormModalOpen.value = !isFormModalOpen.value
 }
 
+const onSave = async gradeItem => {
+  if (gradeItem) {
+    const saveGrade = {
+      student_id: parseInt(gradeItem.student_id),
+      subject_id: parseInt(gradeItem.subject),
+      grade: parseInt(gradeItem.grade),
+      date: gradeItem.date,
+    }
+    await gradesStore.addGrade(saveGrade)
+    isFormModalOpen.value = false
+  }
+}
+
 const onDelete = async () => {
   if (selectedGrade.value) {
     await gradesStore.removeGrade(selectedGrade.value.id)
@@ -66,16 +79,6 @@ const onDelete = async () => {
       max_grade: 5,
     }
     await gradesStore.getGrades()
-  }
-}
-
-const onSave = async gradeItem => {
-  if (selectedGrade.value) {
-    await gradesStore.editGrade(selectedGrade.value.id, gradeItem)
-    isFormModalOpen.value = false
-  } else {
-    await gradesStore.addGrade(gradeItem)
-    isFormModalOpen.value = false
   }
 }
 
@@ -94,13 +97,7 @@ const onPageChange = async page => {
   <Section :isLoading="gradesStore.isLoading">
     <div class="w-full flex justify-between items-center gap-4 py-5">
       <Input type="text" v-model="filters.name" placeholder="Név" />
-      <SelectInput
-        label="Érdemjegy"
-        :options="SUBJECTS"
-        v-model="filters.subject"
-        :required="true"
-        placeholder="Válassza ki a tantárgyat!"
-      />
+      <Input type="text" v-model="filters.subject" placeholder="Tantárgy" />
       <Input type="text" v-model="filters.class" placeholder="Osztály" />
       <div class="flex justify-center items-center gap-4">
         <Input type="number" v-model="filters.min_grade" :min="1" :max="5" placeholder="min átlag" />
@@ -111,7 +108,11 @@ const onPageChange = async page => {
       <Button :onClick="applyFilters" className="btn-add">Szűrés</Button>
     </div>
 
-    <GradesTable :grades="gradesStore.grades" @navigate-form="toggleFormModal" @open-delete-modal="toggleDeleteModal" />
+    <GradesTable
+      :grades="gradesStore.grades"
+      @open-form-modal="toggleFormModal"
+      @open-delete-modal="toggleDeleteModal"
+    />
     <Pagination
       :currentPage="gradesStore.currentPage"
       :totalPages="gradesStore.totalPages"

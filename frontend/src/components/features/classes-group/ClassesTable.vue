@@ -15,8 +15,7 @@ const router = useRouter()
 const emits = defineEmits(['open-delete-modal'])
 
 const formHandler = classItem => {
-  const params = classItem.id ? { id: classItem.id } : {}
-  router.push({ path: '/classes/create', query: params })
+  router.push({ path: '/classes/create', state: { classItem } })
 }
 
 const detailsHandler = classItem => {

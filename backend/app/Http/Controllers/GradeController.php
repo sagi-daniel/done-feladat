@@ -73,13 +73,14 @@ class GradeController extends Controller
     {
         $rules = [
             'student_id' => 'required|exists:students,id',
-            'subject' => 'required|string|max:255',
+            'subject_id' => 'required|exists:students,id',
             'grade' => 'required|integer|min:1|max:5',
             'date' => 'required|date',
         ];
 
         $messages = [
             'student_id.exists' => 'A megadott diák nem létezik.',
+            'subject_id.exists' => 'A megadott tantárgy nem létezik.',
             'grade.min' => 'A jegynek legalább 1-nek kell lennie.',
             'grade.max' => 'A jegy legfeljebb 5 lehet.',
         ];

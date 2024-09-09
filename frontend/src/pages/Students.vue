@@ -9,7 +9,6 @@ import StudentsTable from '../components/features/students-group/StudentsTable.v
 import Pagination from '../components/shared/Pagination.vue'
 import DeleteAlertModal from '../components/shared/DeleteAlertModal.vue'
 
-const isFormModalOpen = ref(false)
 const isDeleteModalOpen = ref(false)
 const selectedStudent = ref(null)
 
@@ -23,8 +22,8 @@ const filters = ref({
   name: '',
   phone: '',
   class: '',
-  min_average: 1,
-  max_average: 5,
+  min_average: 0,
+  max_average: 0,
 })
 
 const applyFilters = async () => {
@@ -59,15 +58,8 @@ const onDelete = async () => {
 const toggleDeleteModal = studentItem => {
   if (studentItem) {
     selectedStudent.value = studentItem
-    isDeleteModalOpen.value = !isDeleteModalOpen.value
   }
-}
-
-const toggleFormModal = studentItem => {
-  if (studentItem) {
-    selectedStudent.value = studentItem
-    isFormModalOpen.value = !isFormModalOpen.value
-  }
+  isDeleteModalOpen.value = !isDeleteModalOpen.value
 }
 
 const toggleDetailsModal = studentItem => {
@@ -104,7 +96,6 @@ const onPageChange = async page => {
     </div>
     <StudentsTable
       :students="studentsStore.students"
-      @open-form-modal="toggleFormModal"
       @open-delete-modal="toggleDeleteModal"
       @open-details-modal="toggleDetailsModal"
     />

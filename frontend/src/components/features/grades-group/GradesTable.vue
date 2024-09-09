@@ -30,10 +30,7 @@ const deleteHandler = gradeItem => {
       { name: 'Dátum', key: 'date', mobileVisible: false },
     ]"
     :data="grades"
-    :actions="[
-      { icon: 'pencil', handler: formHandler },
-      { icon: 'trash', handler: deleteHandler },
-    ]"
+    :actions="[{ icon: 'trash', handler: deleteHandler }]"
     :addHandler="formHandler"
   />
 </template>
